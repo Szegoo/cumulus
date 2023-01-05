@@ -754,6 +754,7 @@
 <span id="754">754</span>
 <span id="755">755</span>
 <span id="756">756</span>
+<span id="757">757</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2022 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -857,10 +858,10 @@
 	spec_name: <span class="macro">create_runtime_str!</span>(<span class="string">&quot;test-parachain&quot;</span>),
 	impl_name: <span class="macro">create_runtime_str!</span>(<span class="string">&quot;test-parachain&quot;</span>),
 	authoring_version: <span class="number">1</span>,
-	spec_version: <span class="number">9330</span>,
+	spec_version: <span class="number">9360</span>,
 	impl_version: <span class="number">0</span>,
 	apis: RUNTIME_API_VERSIONS,
-	transaction_version: <span class="number">3</span>,
+	transaction_version: <span class="number">4</span>,
 	state_version: <span class="number">0</span>,
 };
 
@@ -1259,6 +1260,7 @@
 	<span class="kw">type </span>Freezer = ();
 	<span class="kw">type </span>Extra = ();
 	<span class="kw">type </span>WeightInfo = pallet_assets::weights::SubstrateWeight&lt;Runtime&gt;;
+	<span class="kw">type </span>CallbackHandle = ();
 	<span class="kw">type </span>AssetAccountDeposit = AssetAccountDeposit;
 	<span class="kw">type </span>RemoveItemsLimit = frame_support::traits::ConstU32&lt;<span class="number">1000</span>&gt;;
 	<span class="attribute">#[cfg(feature = <span class="string">&quot;runtime-benchmarks&quot;</span>)]
