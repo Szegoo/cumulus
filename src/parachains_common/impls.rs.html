@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `parachains/common/src/impls.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>impls.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../parachains_common/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../parachains_common/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../parachains_common/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `parachains/common/src/impls.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>impls.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../parachains_common/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -274,12 +274,6 @@
 <span id="274">274</span>
 <span id="275">275</span>
 <span id="276">276</span>
-<span id="277">277</span>
-<span id="278">278</span>
-<span id="279">279</span>
-<span id="280">280</span>
-<span id="281">281</span>
-<span id="282">282</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -300,13 +294,12 @@
 
 </span><span class="kw">use </span>frame_support::traits::{
 	fungibles::{<span class="self">self</span>, Balanced, CreditOf},
-	Contains, Currency, Get, Imbalance, OnUnbalanced,
+	Contains, ContainsPair, Currency, Get, Imbalance, OnUnbalanced,
 };
 <span class="kw">use </span>pallet_asset_tx_payment::HandleCredit;
 <span class="kw">use </span>sp_runtime::traits::Zero;
 <span class="kw">use </span>sp_std::marker::PhantomData;
 <span class="kw">use </span>xcm::latest::{AssetId, Fungibility::Fungible, MultiAsset, MultiLocation};
-<span class="kw">use </span>xcm_executor::traits::FilterAssetLocation;
 
 <span class="doccomment">/// Type alias to conveniently refer to the `Currency::NegativeImbalance` associated type.
 </span><span class="kw">pub type </span>NegativeImbalance&lt;T&gt; = &lt;pallet_balances::Pallet&lt;T&gt; <span class="kw">as </span>Currency&lt;
@@ -321,8 +314,7 @@
 <span class="kw">impl</span>&lt;R&gt; OnUnbalanced&lt;NegativeImbalance&lt;R&gt;&gt; <span class="kw">for </span>ToStakingPot&lt;R&gt;
 <span class="kw">where
 	</span>R: pallet_balances::Config + pallet_collator_selection::Config,
-	AccountIdOf&lt;R&gt;:
-		From&lt;polkadot_primitives::v2::AccountId&gt; + Into&lt;polkadot_primitives::v2::AccountId&gt;,
+	AccountIdOf&lt;R&gt;: From&lt;polkadot_primitives::AccountId&gt; + Into&lt;polkadot_primitives::AccountId&gt;,
 	&lt;R <span class="kw">as </span>frame_system::Config&gt;::RuntimeEvent: From&lt;pallet_balances::Event&lt;R&gt;&gt;,
 {
 	<span class="kw">fn </span>on_nonzero_unbalanced(amount: NegativeImbalance&lt;R&gt;) {
@@ -337,8 +329,7 @@
 <span class="kw">impl</span>&lt;R&gt; OnUnbalanced&lt;NegativeImbalance&lt;R&gt;&gt; <span class="kw">for </span>DealWithFees&lt;R&gt;
 <span class="kw">where
 	</span>R: pallet_balances::Config + pallet_collator_selection::Config,
-	AccountIdOf&lt;R&gt;:
-		From&lt;polkadot_primitives::v2::AccountId&gt; + Into&lt;polkadot_primitives::v2::AccountId&gt;,
+	AccountIdOf&lt;R&gt;: From&lt;polkadot_primitives::AccountId&gt; + Into&lt;polkadot_primitives::AccountId&gt;,
 	&lt;R <span class="kw">as </span>frame_system::Config&gt;::RuntimeEvent: From&lt;pallet_balances::Event&lt;R&gt;&gt;,
 {
 	<span class="kw">fn </span>on_unbalanceds&lt;B&gt;(<span class="kw-2">mut </span>fees_then_tips: <span class="kw">impl </span>Iterator&lt;Item = NegativeImbalance&lt;R&gt;&gt;) {
@@ -353,17 +344,17 @@
 
 <span class="doccomment">/// A `HandleCredit` implementation that naively transfers the fees to the block author.
 /// Will drop and burn the assets in case the transfer fails.
-</span><span class="kw">pub struct </span>AssetsToBlockAuthor&lt;R&gt;(PhantomData&lt;R&gt;);
-<span class="kw">impl</span>&lt;R&gt; HandleCredit&lt;AccountIdOf&lt;R&gt;, pallet_assets::Pallet&lt;R&gt;&gt; <span class="kw">for </span>AssetsToBlockAuthor&lt;R&gt;
+</span><span class="kw">pub struct </span>AssetsToBlockAuthor&lt;R, I&gt;(PhantomData&lt;(R, I)&gt;);
+<span class="kw">impl</span>&lt;R, I&gt; HandleCredit&lt;AccountIdOf&lt;R&gt;, pallet_assets::Pallet&lt;R, I&gt;&gt; <span class="kw">for </span>AssetsToBlockAuthor&lt;R, I&gt;
 <span class="kw">where
-	</span>R: pallet_authorship::Config + pallet_assets::Config,
-	AccountIdOf&lt;R&gt;:
-		From&lt;polkadot_primitives::v2::AccountId&gt; + Into&lt;polkadot_primitives::v2::AccountId&gt;,
+	</span>I: <span class="lifetime">&#39;static</span>,
+	R: pallet_authorship::Config + pallet_assets::Config&lt;I&gt;,
+	AccountIdOf&lt;R&gt;: From&lt;polkadot_primitives::AccountId&gt; + Into&lt;polkadot_primitives::AccountId&gt;,
 {
-	<span class="kw">fn </span>handle_credit(credit: CreditOf&lt;AccountIdOf&lt;R&gt;, pallet_assets::Pallet&lt;R&gt;&gt;) {
+	<span class="kw">fn </span>handle_credit(credit: CreditOf&lt;AccountIdOf&lt;R&gt;, pallet_assets::Pallet&lt;R, I&gt;&gt;) {
 		<span class="kw">if let </span><span class="prelude-val">Some</span>(author) = pallet_authorship::Pallet::&lt;R&gt;::author() {
 			<span class="comment">// In case of error: Will drop the result triggering the `OnDrop` of the imbalance.
-			</span><span class="kw">let _ </span>= pallet_assets::Pallet::&lt;R&gt;::resolve(<span class="kw-2">&amp;</span>author, credit);
+			</span><span class="kw">let _ </span>= pallet_assets::Pallet::&lt;R, I&gt;::resolve(<span class="kw-2">&amp;</span>author, credit);
 		}
 	}
 }
@@ -382,8 +373,8 @@
 
 <span class="doccomment">/// Asset filter that allows all assets from a certain location.
 </span><span class="kw">pub struct </span>AssetsFrom&lt;T&gt;(PhantomData&lt;T&gt;);
-<span class="kw">impl</span>&lt;T: Get&lt;MultiLocation&gt;&gt; FilterAssetLocation <span class="kw">for </span>AssetsFrom&lt;T&gt; {
-	<span class="kw">fn </span>filter_asset_location(asset: <span class="kw-2">&amp;</span>MultiAsset, origin: <span class="kw-2">&amp;</span>MultiLocation) -&gt; bool {
+<span class="kw">impl</span>&lt;T: Get&lt;MultiLocation&gt;&gt; ContainsPair&lt;MultiAsset, MultiLocation&gt; <span class="kw">for </span>AssetsFrom&lt;T&gt; {
+	<span class="kw">fn </span>contains(asset: <span class="kw-2">&amp;</span>MultiAsset, origin: <span class="kw-2">&amp;</span>MultiLocation) -&gt; bool {
 		<span class="kw">let </span>loc = T::get();
 		<span class="kw-2">&amp;</span>loc == origin &amp;&amp;
 			<span class="macro">matches!</span>(asset, MultiAsset { id: AssetId::Concrete(asset_loc), fun: Fungible(_a) }
@@ -401,7 +392,7 @@
 	};
 	<span class="kw">use </span>frame_system::{limits, EnsureRoot};
 	<span class="kw">use </span>pallet_collator_selection::IdentityCollator;
-	<span class="kw">use </span>polkadot_primitives::v2::AccountId;
+	<span class="kw">use </span>polkadot_primitives::AccountId;
 	<span class="kw">use </span>sp_core::H256;
 	<span class="kw">use </span>sp_runtime::{
 		testing::Header,
@@ -552,15 +543,12 @@
 			.clone()
 			.pushed_with_interior(GeneralIndex(<span class="number">42</span>))
 			.expect(<span class="string">&quot;multilocation will only have 2 junctions; qed&quot;</span>);
-		<span class="kw">let </span>asset = MultiAsset { id: Concrete(asset_location), fun: <span class="number">1_000_000</span>.into() };
+		<span class="kw">let </span>asset = MultiAsset { id: Concrete(asset_location), fun: <span class="number">1_000_000u128</span>.into() };
 		<span class="macro">assert!</span>(
-			AssetsFrom::&lt;SomeSiblingParachain&gt;::filter_asset_location(
-				<span class="kw-2">&amp;</span>asset,
-				<span class="kw-2">&amp;</span>SomeSiblingParachain::get()
-			),
+			AssetsFrom::&lt;SomeSiblingParachain&gt;::contains(<span class="kw-2">&amp;</span>asset, <span class="kw-2">&amp;</span>SomeSiblingParachain::get()),
 			<span class="string">&quot;AssetsFrom should allow assets from any of its interior locations&quot;
 		</span>);
 	}
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="parachains_common" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="parachains_common" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.1 (90743e729 2023-01-10)" ></div></body></html>

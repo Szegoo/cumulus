@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pallets/parachain-system/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../cumulus_pallet_parachain_system/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../cumulus_pallet_parachain_system/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../cumulus_pallet_parachain_system/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pallets/parachain-system/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../cumulus_pallet_parachain_system/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -1107,28 +1107,6 @@
 <span id="1107">1107</span>
 <span id="1108">1108</span>
 <span id="1109">1109</span>
-<span id="1110">1110</span>
-<span id="1111">1111</span>
-<span id="1112">1112</span>
-<span id="1113">1113</span>
-<span id="1114">1114</span>
-<span id="1115">1115</span>
-<span id="1116">1116</span>
-<span id="1117">1117</span>
-<span id="1118">1118</span>
-<span id="1119">1119</span>
-<span id="1120">1120</span>
-<span id="1121">1121</span>
-<span id="1122">1122</span>
-<span id="1123">1123</span>
-<span id="1124">1124</span>
-<span id="1125">1125</span>
-<span id="1126">1126</span>
-<span id="1127">1127</span>
-<span id="1128">1128</span>
-<span id="1129">1129</span>
-<span id="1130">1130</span>
-<span id="1131">1131</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -1184,6 +1162,7 @@
 	},
 };
 <span class="kw">use </span>sp_std::{cmp, collections::btree_map::BTreeMap, prelude::<span class="kw-2">*</span>};
+<span class="kw">use </span>xcm::latest::XcmHash;
 
 <span class="kw">mod </span>migration;
 <span class="kw">mod </span>relay_state_snapshot;
@@ -1486,8 +1465,6 @@
 				horizontal_messages,
 			} = data;
 
-			<span class="self">Self</span>::validate_validation_data(<span class="kw-2">&amp;</span>vfp);
-
 			<span class="comment">// Check that the associated relay chain block number is as expected.
 			</span>T::CheckAssociatedRelayNumber::check_associated_relay_number(
 				vfp.relay_parent_number,
@@ -1509,7 +1486,7 @@
 				.read_upgrade_go_ahead_signal()
 				.expect(<span class="string">&quot;Invalid upgrade go ahead signal&quot;</span>);
 			<span class="kw">match </span>upgrade_go_ahead_signal {
-				<span class="prelude-val">Some</span>(relay_chain::v2::UpgradeGoAhead::GoAhead) =&gt; {
+				<span class="prelude-val">Some</span>(relay_chain::UpgradeGoAhead::GoAhead) =&gt; {
 					<span class="macro">assert!</span>(
 						&lt;PendingValidationCode&lt;T&gt;&gt;::exists(),
 						<span class="string">&quot;No new validation function found in storage, GoAhead signal is not expected&quot;</span>,
@@ -1522,7 +1499,7 @@
 						relay_chain_block_num: vfp.relay_parent_number,
 					});
 				},
-				<span class="prelude-val">Some</span>(relay_chain::v2::UpgradeGoAhead::Abort) =&gt; {
+				<span class="prelude-val">Some</span>(relay_chain::UpgradeGoAhead::Abort) =&gt; {
 					&lt;PendingValidationCode&lt;T&gt;&gt;::kill();
 					<span class="self">Self</span>::deposit_event(Event::ValidationFunctionDiscarded);
 				},
@@ -1613,6 +1590,8 @@
 		</span>DownwardMessagesReceived { count: u32 },
 		<span class="doccomment">/// Downward messages were processed using the given weight.
 		</span>DownwardMessagesProcessed { weight_used: Weight, dmq_head: relay_chain::Hash },
+		<span class="doccomment">/// An upward message was sent to the relay chain.
+		</span>UpwardMessageSent { message_hash: <span class="prelude-ty">Option</span>&lt;XcmHash&gt; },
 	}
 
 	<span class="attribute">#[pallet::error]
@@ -1679,7 +1658,7 @@
 	/// set after the inherent.
 	</span><span class="attribute">#[pallet::storage]
 	</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">type </span>UpgradeRestrictionSignal&lt;T: Config&gt; =
-		StorageValue&lt;<span class="kw">_</span>, <span class="prelude-ty">Option</span>&lt;relay_chain::v2::UpgradeRestriction&gt;, ValueQuery&gt;;
+		StorageValue&lt;<span class="kw">_</span>, <span class="prelude-ty">Option</span>&lt;relay_chain::UpgradeRestriction&gt;, ValueQuery&gt;;
 
 	<span class="doccomment">/// The state proof for the last relay parent block.
 	///
@@ -1738,7 +1717,7 @@
 	/// This will be cleared in `on_initialize` of each new block.
 	</span><span class="attribute">#[pallet::storage]
 	</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">type </span>HrmpWatermark&lt;T: Config&gt; =
-		StorageValue&lt;<span class="kw">_</span>, relay_chain::v2::BlockNumber, ValueQuery&gt;;
+		StorageValue&lt;<span class="kw">_</span>, relay_chain::BlockNumber, ValueQuery&gt;;
 
 	<span class="doccomment">/// HRMP messages that were sent in a block.
 	///
@@ -1876,7 +1855,7 @@
 		// None then it must be that this is an edge-case where a message is attempted to be
 		// sent at the first block. It should be safe to assume that there are no channels
 		// opened at all so early. At least, relying on this assumption seems to be a better
-		// tradeoff, compared to introducing an error variant that the clients should be
+		// trade-off, compared to introducing an error variant that the clients should be
 		// prepared to handle.
 		</span><span class="kw">let </span>index = <span class="kw">match </span>channels.binary_search_by_key(<span class="kw-2">&amp;</span>id, |item| item.<span class="number">0</span>) {
 			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return </span>ChannelStatus::Closed,
@@ -1900,34 +1879,6 @@
 }
 
 <span class="kw">impl</span>&lt;T: Config&gt; Pallet&lt;T&gt; {
-	<span class="doccomment">/// Validate the given [`PersistedValidationData`] against the
-	/// [`ValidationParams`](polkadot_parachain::primitives::ValidationParams).
-	///
-	/// This check will only be executed when the block is currently being executed in the context
-	/// of [`validate_block`]. If this is being executed in the context of block building or block
-	/// import, this is a no-op.
-	///
-	/// # Panics
-	///
-	/// Panics while validating the `PoV` on the relay chain if the [`PersistedValidationData`]
-	/// passed by the block author was incorrect.
-	</span><span class="kw">fn </span>validate_validation_data(validation_data: <span class="kw-2">&amp;</span>PersistedValidationData) {
-		validate_block::with_validation_params(|params| {
-			<span class="macro">assert_eq!</span>(
-				params.parent_head, validation_data.parent_head,
-				<span class="string">&quot;Parent head doesn&#39;t match&quot;
-			</span>);
-			<span class="macro">assert_eq!</span>(
-				params.relay_parent_number, validation_data.relay_parent_number,
-				<span class="string">&quot;Relay parent number doesn&#39;t match&quot;</span>,
-			);
-			<span class="macro">assert_eq!</span>(
-				params.relay_parent_storage_root, validation_data.relay_parent_storage_root,
-				<span class="string">&quot;Relay parent storage root doesn&#39;t match&quot;</span>,
-			);
-		});
-	}
-
 	<span class="doccomment">/// Process all inbound downward messages relayed by the collator.
 	///
 	/// Checks if the sequence of the messages is valid, dispatches them and communicates the
@@ -1989,7 +1940,7 @@
 	</span><span class="kw">fn </span>process_inbound_horizontal_messages(
 		ingress_channels: <span class="kw-2">&amp;</span>[(ParaId, cumulus_primitives_core::AbridgedHrmpChannel)],
 		horizontal_messages: BTreeMap&lt;ParaId, Vec&lt;InboundHrmpMessage&gt;&gt;,
-		relay_parent_number: relay_chain::v2::BlockNumber,
+		relay_parent_number: relay_chain::BlockNumber,
 	) -&gt; Weight {
 		<span class="comment">// First, check that all submitted messages are sent from channels that exist. The
 		// channel exists if its MQC head is present in `vfp.hrmp_mqc_heads`.
@@ -2165,7 +2116,7 @@
 }
 
 <span class="kw">impl</span>&lt;T: Config&gt; Pallet&lt;T&gt; {
-	<span class="kw">pub fn </span>send_upward_message(message: UpwardMessage) -&gt; <span class="prelude-ty">Result</span>&lt;u32, MessageSendError&gt; {
+	<span class="kw">pub fn </span>send_upward_message(message: UpwardMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(u32, XcmHash), MessageSendError&gt; {
 		<span class="comment">// Check if the message fits into the relay-chain constraints.
 		//
 		// Note, that we are using `host_configuration` here which may be from the previous
@@ -2195,13 +2146,18 @@
 				// Thus fall through here.
 			</span>},
 		};
-		&lt;PendingUpwardMessages&lt;T&gt;&gt;::append(message);
-		<span class="prelude-val">Ok</span>(<span class="number">0</span>)
+		&lt;PendingUpwardMessages&lt;T&gt;&gt;::append(message.clone());
+
+		<span class="comment">// The relay ump does not use using_encoded
+		// We apply the same this to use the same hash
+		</span><span class="kw">let </span>hash = sp_io::hashing::blake2_256(<span class="kw-2">&amp;</span>message);
+		<span class="self">Self</span>::deposit_event(Event::UpwardMessageSent { message_hash: <span class="prelude-val">Some</span>(hash) });
+		<span class="prelude-val">Ok</span>((<span class="number">0</span>, hash))
 	}
 }
 
 <span class="kw">impl</span>&lt;T: Config&gt; UpwardMessageSender <span class="kw">for </span>Pallet&lt;T&gt; {
-	<span class="kw">fn </span>send_upward_message(message: UpwardMessage) -&gt; <span class="prelude-ty">Result</span>&lt;u32, MessageSendError&gt; {
+	<span class="kw">fn </span>send_upward_message(message: UpwardMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(u32, XcmHash), MessageSendError&gt; {
 		<span class="self">Self</span>::send_upward_message(message)
 	}
 }
@@ -2261,4 +2217,4 @@
 	}
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cumulus_pallet_parachain_system" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cumulus_pallet_parachain_system" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.1 (90743e729 2023-01-10)" ></div></body></html>
