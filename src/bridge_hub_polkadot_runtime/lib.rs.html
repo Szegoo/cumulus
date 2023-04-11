@@ -764,6 +764,11 @@
 <a href="#764" id="764">764</a>
 <a href="#765" id="765">765</a>
 <a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2023 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -894,10 +899,10 @@
 	spec_name: <span class="macro">create_runtime_str!</span>(<span class="string">&quot;bridge-hub-polkadot&quot;</span>),
 	impl_name: <span class="macro">create_runtime_str!</span>(<span class="string">&quot;bridge-hub-polkadot&quot;</span>),
 	authoring_version: <span class="number">1</span>,
-	spec_version: <span class="number">9381</span>,
+	spec_version: <span class="number">9400</span>,
 	impl_version: <span class="number">0</span>,
 	apis: RUNTIME_API_VERSIONS,
-	transaction_version: <span class="number">1</span>,
+	transaction_version: <span class="number">2</span>,
 	state_version: <span class="number">1</span>,
 };
 
@@ -1453,7 +1458,7 @@
 					<span class="prelude-val">Err</span>(BenchmarkError::Skip)
 				}
 
-				<span class="kw">fn </span>universal_alias() -&gt; <span class="prelude-ty">Result</span>&lt;Junction, BenchmarkError&gt; {
+				<span class="kw">fn </span>universal_alias() -&gt; <span class="prelude-ty">Result</span>&lt;(MultiLocation, Junction), BenchmarkError&gt; {
 					<span class="prelude-val">Err</span>(BenchmarkError::Skip)
 				}
 
@@ -1473,6 +1478,11 @@
 				}
 
 				<span class="kw">fn </span>unlockable_asset() -&gt; <span class="prelude-ty">Result</span>&lt;(MultiLocation, MultiLocation, MultiAsset), BenchmarkError&gt; {
+					<span class="prelude-val">Err</span>(BenchmarkError::Skip)
+				}
+
+				<span class="kw">fn </span>export_message_origin_and_destination(
+				) -&gt; <span class="prelude-ty">Result</span>&lt;(MultiLocation, NetworkId, InteriorMultiLocation), BenchmarkError&gt; {
 					<span class="prelude-val">Err</span>(BenchmarkError::Skip)
 				}
 			}
@@ -1531,4 +1541,4 @@
 	CheckInherents = CheckInherents,
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="bridge_hub_polkadot_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="bridge_hub_polkadot_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

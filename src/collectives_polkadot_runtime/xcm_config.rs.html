@@ -300,7 +300,6 @@
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -325,6 +324,7 @@
 	traits::{ConstU32, Contains, Everything, Nothing},
 	weights::Weight,
 };
+<span class="kw">use </span>frame_system::EnsureRoot;
 <span class="kw">use </span>pallet_xcm::XcmPassthrough;
 <span class="kw">use </span>parachains_common::{
 	impls::ToStakingPot,
@@ -348,7 +348,6 @@
 	<span class="kw">pub </span>RelayChainOrigin: RuntimeOrigin = cumulus_pallet_xcm::Origin::Relay.into();
 	<span class="kw">pub </span>UniversalLocation: InteriorMultiLocation =
 		X2(GlobalConsensus(RelayNetwork::get().unwrap()), Parachain(ParachainInfo::parachain_id().into()));
-	<span class="kw">pub const </span>Local: MultiLocation = Here.into_location();
 	<span class="kw">pub </span>CheckingAccount: AccountId = PolkadotXcm::check_account();
 	<span class="kw">pub const </span>GovernanceLocation: MultiLocation = MultiLocation::parent();
 }
@@ -466,7 +465,6 @@
 				// but the call can be initiated only by root origin.
 				</span>pallet_alliance::Call::init_members { .. } |
 				pallet_alliance::Call::vote { .. } |
-				pallet_alliance::Call::close_old_weight { .. } |
 				pallet_alliance::Call::disband { .. } |
 				pallet_alliance::Call::set_rule { .. } |
 				pallet_alliance::Call::announce { .. } |
@@ -482,7 +480,6 @@
 			) |
 			RuntimeCall::AllianceMotion(
 				pallet_collective::Call::vote { .. } |
-				pallet_collective::Call::close_old_weight { .. } |
 				pallet_collective::Call::disapprove_proposal { .. } |
 				pallet_collective::Call::close { .. },
 			) |
@@ -598,6 +595,7 @@
 	<span class="kw">type </span>WeightInfo = <span class="kw">crate</span>::weights::pallet_xcm::WeightInfo&lt;Runtime&gt;;
 	<span class="attr">#[cfg(feature = <span class="string">&quot;runtime-benchmarks&quot;</span>)]
 	</span><span class="kw">type </span>ReachableDest = ReachableDest;
+	<span class="kw">type </span>AdminOrigin = EnsureRoot&lt;AccountId&gt;;
 }
 
 <span class="kw">impl </span>cumulus_pallet_xcm::Config <span class="kw">for </span>Runtime {
@@ -605,4 +603,4 @@
 	<span class="kw">type </span>XcmExecutor = XcmExecutor&lt;XcmConfig&gt;;
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="collectives_polkadot_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="collectives_polkadot_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
