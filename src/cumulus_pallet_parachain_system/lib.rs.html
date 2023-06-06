@@ -1239,12 +1239,6 @@
 <a href="#1239" id="1239">1239</a>
 <a href="#1240" id="1240">1240</a>
 <a href="#1241" id="1241">1241</a>
-<a href="#1242" id="1242">1242</a>
-<a href="#1243" id="1243">1243</a>
-<a href="#1244" id="1244">1244</a>
-<a href="#1245" id="1245">1245</a>
-<a href="#1246" id="1246">1246</a>
-<a href="#1247" id="1247">1247</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -1304,7 +1298,7 @@
 <span class="kw">use </span>sp_std::{cmp, collections::btree_map::BTreeMap, prelude::<span class="kw-2">*</span>};
 <span class="kw">use </span>xcm::latest::XcmHash;
 
-<span class="kw">mod </span>migration;
+<span class="kw">pub mod </span>migration;
 <span class="kw">mod </span>relay_state_snapshot;
 <span class="attr">#[macro_use]
 </span><span class="kw">pub mod </span>validate_block;
@@ -1444,10 +1438,6 @@
 
 	<span class="attr">#[pallet::hooks]
 	</span><span class="kw">impl</span>&lt;T: Config&gt; Hooks&lt;BlockNumberFor&lt;T&gt;&gt; <span class="kw">for </span>Pallet&lt;T&gt; {
-		<span class="kw">fn </span>on_runtime_upgrade() -&gt; Weight {
-			migration::on_runtime_upgrade::&lt;T&gt;()
-		}
-
 		<span class="kw">fn </span>on_finalize(<span class="kw">_</span>: T::BlockNumber) {
 			&lt;DidSetValidationCode&lt;T&gt;&gt;::kill();
 			&lt;UpgradeRestrictionSignal&lt;T&gt;&gt;::kill();
@@ -1800,10 +1790,8 @@
 
 	<span class="doccomment">/// In case of a scheduled upgrade, this storage field contains the validation code to be applied.
 	///
-	/// As soon as the relay chain gives us the go-ahead signal, we will overwrite the [`:code`][well_known_keys::CODE]
+	/// As soon as the relay chain gives us the go-ahead signal, we will overwrite the [`:code`][sp_core::storage::well_known_keys::CODE]
 	/// which will result the next block process with the new validation code. This concludes the upgrade process.
-	///
-	/// [well_known_keys::CODE]: sp_core::storage::well_known_keys::CODE
 	</span><span class="attr">#[pallet::storage]
 	#[pallet::getter(<span class="kw">fn </span>new_validation_function)]
 	</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">type </span>PendingValidationCode&lt;T: Config&gt; = StorageValue&lt;<span class="kw">_</span>, Vec&lt;u8&gt;, ValueQuery&gt;;
@@ -1941,7 +1929,7 @@
 
 	<span class="doccomment">/// A custom head data that should be returned as result of `validate_block`.
 	///
-	/// See [`Pallet::set_custom_validation_head_data`] for more information.
+	/// See `Pallet::set_custom_validation_head_data` for more information.
 	</span><span class="attr">#[pallet::storage]
 	</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">type </span>CustomValidationHeadData&lt;T: Config&gt; = StorageValue&lt;<span class="kw">_</span>, Vec&lt;u8&gt;, OptionQuery&gt;;
 
@@ -2121,7 +2109,7 @@
 
 	<span class="doccomment">/// Process all inbound horizontal messages relayed by the collator.
 	///
-	/// This is similar to [`process_inbound_downward_messages`], but works on multiple inbound
+	/// This is similar to `Pallet::process_inbound_downward_messages`, but works on multiple inbound
 	/// channels.
 	///
 	/// **Panics** if either any of horizontal messages submitted by the collator was sent from

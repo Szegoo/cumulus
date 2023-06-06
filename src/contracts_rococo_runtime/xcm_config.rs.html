@@ -242,6 +242,10 @@
 <a href="#242" id="242">242</a>
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -268,16 +272,16 @@
 };
 <span class="kw">use </span>frame_system::EnsureRoot;
 <span class="kw">use </span>pallet_xcm::{EnsureXcm, IsMajorityOfBody, XcmPassthrough};
-<span class="kw">use </span>parachains_common::xcm_config::{DenyReserveTransferToRelayChain, DenyThenTry};
 <span class="kw">use </span>polkadot_parachain::primitives::Sibling;
 <span class="kw">use </span>xcm::latest::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>xcm_builder::{
 	AccountId32Aliases, AllowExplicitUnpaidExecutionFrom, AllowKnownQueryResponses,
-	AllowSubscriptionsFrom, AllowTopLevelPaidExecutionFrom, CurrencyAdapter, EnsureXcmOrigin,
-	FixedWeightBounds, IsConcrete, NativeAsset, ParentAsSuperuser, ParentIsPreset,
-	RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia,
-	SignedAccountId32AsNative, SignedToAccountId32, SovereignSignedViaLocation, TakeWeightCredit,
-	UsingComponents, WithComputedOrigin,
+	AllowSubscriptionsFrom, AllowTopLevelPaidExecutionFrom, CurrencyAdapter,
+	DenyReserveTransferToRelayChain, DenyThenTry, EnsureXcmOrigin, FixedWeightBounds, IsConcrete,
+	NativeAsset, ParentAsSuperuser, ParentIsPreset, RelayChainAsNative, SiblingParachainAsNative,
+	SiblingParachainConvertsVia, SignedAccountId32AsNative, SignedToAccountId32,
+	SovereignSignedViaLocation, TakeWeightCredit, TrailingSetTopicAsId, UsingComponents,
+	WithComputedOrigin, WithUniqueTopic,
 };
 <span class="kw">use </span>xcm_executor::XcmExecutor;
 
@@ -287,6 +291,7 @@
 	<span class="kw">pub </span>RelayChainOrigin: RuntimeOrigin = cumulus_pallet_xcm::Origin::Relay.into();
 	<span class="kw">pub </span>UniversalLocation: InteriorMultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
 	<span class="kw">pub const </span>ExecutiveBody: BodyId = BodyId::Executive;
+	<span class="kw">pub </span>CheckingAccount: AccountId = PolkadotXcm::check_account();
 }
 
 <span class="doccomment">/// We allow root and the Relay Chain council to execute privileged collator selection operations.
@@ -362,26 +367,28 @@
 	};
 }
 
-<span class="kw">pub type </span>Barrier = DenyThenTry&lt;
-	DenyReserveTransferToRelayChain,
-	(
-		TakeWeightCredit,
-		<span class="comment">// Expected responses are OK.
-		</span>AllowKnownQueryResponses&lt;PolkadotXcm&gt;,
-		<span class="comment">// Allow XCMs with some computed origins to pass through.
-		</span>WithComputedOrigin&lt;
-			(
-				<span class="comment">// If the message is one that immediately attemps to pay for execution, then allow it.
-				</span>AllowTopLevelPaidExecutionFrom&lt;Everything&gt;,
-				<span class="comment">// Parent and its pluralities (i.e. governance bodies) get free execution.
-				</span>AllowExplicitUnpaidExecutionFrom&lt;ParentOrParentsPlurality&gt;,
-				<span class="comment">// Subscriptions for version tracking are OK.
-				</span>AllowSubscriptionsFrom&lt;ParentOrSiblings&gt;,
-			),
-			UniversalLocation,
-			ConstU32&lt;<span class="number">8</span>&gt;,
-		&gt;,
-	),
+<span class="kw">pub type </span>Barrier = TrailingSetTopicAsId&lt;
+	DenyThenTry&lt;
+		DenyReserveTransferToRelayChain,
+		(
+			TakeWeightCredit,
+			<span class="comment">// Expected responses are OK.
+			</span>AllowKnownQueryResponses&lt;PolkadotXcm&gt;,
+			<span class="comment">// Allow XCMs with some computed origins to pass through.
+			</span>WithComputedOrigin&lt;
+				(
+					<span class="comment">// If the message is one that immediately attemps to pay for execution, then allow it.
+					</span>AllowTopLevelPaidExecutionFrom&lt;Everything&gt;,
+					<span class="comment">// Parent and its pluralities (i.e. governance bodies) get free execution.
+					</span>AllowExplicitUnpaidExecutionFrom&lt;ParentOrParentsPlurality&gt;,
+					<span class="comment">// Subscriptions for version tracking are OK.
+					</span>AllowSubscriptionsFrom&lt;ParentOrSiblings&gt;,
+				),
+				UniversalLocation,
+				ConstU32&lt;<span class="number">8</span>&gt;,
+			&gt;,
+		),
+	&gt;,
 &gt;;
 
 <span class="kw">pub struct </span>XcmConfig;
@@ -409,6 +416,7 @@
 	<span class="kw">type </span>UniversalAliases = Nothing;
 	<span class="kw">type </span>CallDispatcher = RuntimeCall;
 	<span class="kw">type </span>SafeCallFilter = Everything;
+	<span class="kw">type </span>Aliasers = Nothing;
 }
 
 <span class="doccomment">/// Converts a local signed origin into an XCM multilocation.
@@ -417,12 +425,12 @@
 
 <span class="doccomment">/// The means for routing XCM messages which are not for local execution into the right message
 /// queues.
-</span><span class="kw">pub type </span>XcmRouter = (
+</span><span class="kw">pub type </span>XcmRouter = WithUniqueTopic&lt;(
 	<span class="comment">// Two routers - use UMP to communicate with the relay chain:
 	</span>cumulus_primitives_utility::ParentAsUmp&lt;ParachainSystem, PolkadotXcm, ()&gt;,
 	<span class="comment">// ..and XCMP to communicate with the sibling chains.
 	</span>XcmpQueue,
-);
+)&gt;;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;runtime-benchmarks&quot;</span>)]
 </span><span class="macro">parameter_types! </span>{

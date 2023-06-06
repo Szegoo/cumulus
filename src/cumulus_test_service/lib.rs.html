@@ -892,6 +892,22 @@
 <a href="#892" id="892">892</a>
 <a href="#893" id="893">893</a>
 <a href="#894" id="894">894</a>
+<a href="#895" id="895">895</a>
+<a href="#896" id="896">896</a>
+<a href="#897" id="897">897</a>
+<a href="#898" id="898">898</a>
+<a href="#899" id="899">899</a>
+<a href="#900" id="900">900</a>
+<a href="#901" id="901">901</a>
+<a href="#902" id="902">902</a>
+<a href="#903" id="903">903</a>
+<a href="#904" id="904">904</a>
+<a href="#905" id="905">905</a>
+<a href="#906" id="906">906</a>
+<a href="#907" id="907">907</a>
+<a href="#908" id="908">908</a>
+<a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -912,9 +928,13 @@
 
 </span><span class="attr">#![warn(missing_docs)]
 
-</span><span class="kw">pub mod </span>chain_spec;
+</span><span class="doccomment">/// Utilities used for benchmarking
+</span><span class="kw">pub mod </span>bench_utils;
+
+<span class="kw">pub mod </span>chain_spec;
 <span class="kw">mod </span>genesis;
 
+<span class="kw">use </span>runtime::AccountId;
 <span class="kw">use </span>sc_executor::{HeapAllocStrategy, WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY};
 <span class="kw">use </span>std::{
 	future::Future,
@@ -1395,6 +1415,7 @@
 	storage_update_func_relay_chain: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>Fn()&gt;&gt;,
 	consensus: Consensus,
 	relay_chain_full_node_url: Vec&lt;Url&gt;,
+	endowed_accounts: Vec&lt;AccountId&gt;,
 }
 
 <span class="kw">impl </span>TestNodeBuilder {
@@ -1417,6 +1438,7 @@
 			storage_update_func_relay_chain: <span class="prelude-val">None</span>,
 			consensus: Consensus::RelayChain,
 			relay_chain_full_node_url: <span class="macro">vec!</span>[],
+			endowed_accounts: Default::default(),
 		}
 	}
 
@@ -1523,6 +1545,12 @@
 		<span class="self">self
 	</span>}
 
+	<span class="doccomment">/// Accounts which will have an initial balance.
+	</span><span class="kw">pub fn </span>endowed_accounts(<span class="kw-2">mut </span><span class="self">self</span>, accounts: Vec&lt;AccountId&gt;) -&gt; TestNodeBuilder {
+		<span class="self">self</span>.endowed_accounts = accounts;
+		<span class="self">self
+	</span>}
+
 	<span class="doccomment">/// Build the [`TestNode`].
 	</span><span class="kw">pub async fn </span>build(<span class="self">self</span>) -&gt; TestNode {
 		<span class="kw">let </span>parachain_config = node_config(
@@ -1533,6 +1561,7 @@
 			<span class="self">self</span>.parachain_nodes_exclusive,
 			<span class="self">self</span>.para_id,
 			<span class="self">self</span>.collator_key.is_some(),
+			<span class="self">self</span>.endowed_accounts,
 		)
 		.expect(<span class="string">&quot;could not generate Configuration&quot;</span>);
 
@@ -1586,12 +1615,14 @@
 	nodes_exlusive: bool,
 	para_id: ParaId,
 	is_collator: bool,
+	endowed_accounts: Vec&lt;AccountId&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Configuration, ServiceError&gt; {
 	<span class="kw">let </span>base_path = BasePath::new_temp_dir()<span class="question-mark">?</span>;
 	<span class="kw">let </span>root = base_path.path().join(<span class="macro">format!</span>(<span class="string">&quot;cumulus_test_service_{}&quot;</span>, key));
 	<span class="kw">let </span>role = <span class="kw">if </span>is_collator { Role::Authority } <span class="kw">else </span>{ Role::Full };
 	<span class="kw">let </span>key_seed = key.to_seed();
-	<span class="kw">let </span><span class="kw-2">mut </span>spec = Box::new(chain_spec::get_chain_spec(para_id));
+	<span class="kw">let </span><span class="kw-2">mut </span>spec =
+		Box::new(chain_spec::get_chain_spec_with_extra_endowed(para_id, endowed_accounts));
 
 	<span class="kw">let </span><span class="kw-2">mut </span>storage = spec.as_storage_builder().build_storage().expect(<span class="string">&quot;could not build storage&quot;</span>);
 
@@ -1634,14 +1665,15 @@
 		state_pruning: <span class="prelude-val">Some</span>(PruningMode::ArchiveAll),
 		blocks_pruning: BlocksPruning::KeepAll,
 		chain_spec: spec,
-		wasm_method: WasmExecutionMethod::default(),
-		<span class="comment">// NOTE: we enforce the use of the native runtime to make the errors more debuggable
-		</span>execution_strategies: ExecutionStrategies {
-			syncing: sc_client_api::ExecutionStrategy::NativeWhenPossible,
-			importing: sc_client_api::ExecutionStrategy::NativeWhenPossible,
-			block_construction: sc_client_api::ExecutionStrategy::NativeWhenPossible,
-			offchain_worker: sc_client_api::ExecutionStrategy::NativeWhenPossible,
-			other: sc_client_api::ExecutionStrategy::NativeWhenPossible,
+		wasm_method: WasmExecutionMethod::Compiled {
+			instantiation_strategy: sc_executor_wasmtime::InstantiationStrategy::PoolingCopyOnWrite,
+		},
+		execution_strategies: ExecutionStrategies {
+			syncing: sc_client_api::ExecutionStrategy::AlwaysWasm,
+			importing: sc_client_api::ExecutionStrategy::AlwaysWasm,
+			block_construction: sc_client_api::ExecutionStrategy::AlwaysWasm,
+			offchain_worker: sc_client_api::ExecutionStrategy::AlwaysWasm,
+			other: sc_client_api::ExecutionStrategy::AlwaysWasm,
 		},
 		rpc_addr: <span class="prelude-val">None</span>,
 		rpc_max_connections: Default::default(),

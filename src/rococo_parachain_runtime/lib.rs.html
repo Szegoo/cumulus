@@ -807,6 +807,12 @@
 <a href="#807" id="807">807</a>
 <a href="#808" id="808">808</a>
 <a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2022 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -1046,7 +1052,7 @@
 	<span class="kw">type </span>MaxLocks = ConstU32&lt;<span class="number">50</span>&gt;;
 	<span class="kw">type </span>MaxReserves = ConstU32&lt;<span class="number">50</span>&gt;;
 	<span class="kw">type </span>ReserveIdentifier = [u8; <span class="number">8</span>];
-	<span class="kw">type </span>HoldIdentifier = ();
+	<span class="kw">type </span>RuntimeHoldReason = RuntimeHoldReason;
 	<span class="kw">type </span>FreezeIdentifier = ();
 	<span class="kw">type </span>MaxHolds = ConstU32&lt;<span class="number">0</span>&gt;;
 	<span class="kw">type </span>MaxFreezes = ConstU32&lt;<span class="number">0</span>&gt;;
@@ -1130,7 +1136,11 @@
 	</span>ConvertedConcreteId&lt;
 		AssetIdForTrustBackedAssets,
 		u64,
-		AsPrefixedGeneralIndex&lt;StatemintAssetsPalletLocation, AssetIdForTrustBackedAssets, JustTry&gt;,
+		AsPrefixedGeneralIndex&lt;
+			SystemAssetHubAssetsPalletLocation,
+			AssetIdForTrustBackedAssets,
+			JustTry,
+		&gt;,
 		JustTry,
 	&gt;,
 	<span class="comment">// Convert an XCM MultiLocation into a local account id:
@@ -1179,11 +1189,13 @@
 }
 
 <span class="macro">match_types! </span>{
-	<span class="kw">pub type </span>ParentOrParentsUnitPlurality: <span class="kw">impl </span>Contains&lt;MultiLocation&gt; = {
+	<span class="comment">// The parent or the parent&#39;s unit plurality.
+	</span><span class="kw">pub type </span>ParentOrParentsUnitPlurality: <span class="kw">impl </span>Contains&lt;MultiLocation&gt; = {
 		MultiLocation { parents: <span class="number">1</span>, interior: Here } |
 		MultiLocation { parents: <span class="number">1</span>, interior: X1(Plurality { id: BodyId::Unit, .. }) }
 	};
-	<span class="kw">pub type </span>Statemint: <span class="kw">impl </span>Contains&lt;MultiLocation&gt; = {
+	<span class="comment">// The location recognized as the Relay network&#39;s Asset Hub.
+	</span><span class="kw">pub type </span>AssetHub: <span class="kw">impl </span>Contains&lt;MultiLocation&gt; = {
 		MultiLocation { parents: <span class="number">1</span>, interior: X1(Parachain(<span class="number">1000</span>)) }
 	};
 }
@@ -1191,9 +1203,10 @@
 <span class="kw">pub type </span>Barrier = (
 	TakeWeightCredit,
 	AllowTopLevelPaidExecutionFrom&lt;Everything&gt;,
-	AllowExplicitUnpaidExecutionFrom&lt;ParentOrParentsUnitPlurality&gt;,
-	<span class="comment">// ^^^ Parent &amp; its unit plurality gets free execution
-	</span>AllowExplicitUnpaidExecutionFrom&lt;Statemint&gt;,
+	<span class="comment">// Parent &amp; its unit plurality gets free execution.
+	</span>AllowExplicitUnpaidExecutionFrom&lt;ParentOrParentsUnitPlurality&gt;,
+	<span class="comment">// The network&#39;s Asset Hub gets free execution.
+	</span>AllowExplicitUnpaidExecutionFrom&lt;AssetHub&gt;,
 	<span class="comment">// Expected responses are OK.
 	</span>AllowKnownQueryResponses&lt;PolkadotXcm&gt;,
 	<span class="comment">// Subscriptions for version tracking are OK.
@@ -1202,14 +1215,14 @@
 
 <span class="macro">parameter_types! </span>{
 	<span class="kw">pub </span>MaxAssetsIntoHolding: u32 = <span class="number">64</span>;
-	<span class="kw">pub </span>StatemintLocation: MultiLocation = MultiLocation::new(<span class="number">1</span>, X1(Parachain(<span class="number">1000</span>)));
+	<span class="kw">pub </span>SystemAssetHubLocation: MultiLocation = MultiLocation::new(<span class="number">1</span>, X1(Parachain(<span class="number">1000</span>)));
 	<span class="comment">// ALWAYS ensure that the index in PalletInstance stays up-to-date with
-	// Statemint&#39;s Assets pallet index
-	</span><span class="kw">pub </span>StatemintAssetsPalletLocation: MultiLocation =
+	// the Relay Chain&#39;s Asset Hub&#39;s Assets pallet index
+	</span><span class="kw">pub </span>SystemAssetHubAssetsPalletLocation: MultiLocation =
 		MultiLocation::new(<span class="number">1</span>, X2(Parachain(<span class="number">1000</span>), PalletInstance(<span class="number">50</span>)));
 }
 
-<span class="kw">pub type </span>Reserves = (NativeAsset, AssetsFrom&lt;StatemintLocation&gt;);
+<span class="kw">pub type </span>Reserves = (NativeAsset, AssetsFrom&lt;SystemAssetHubLocation&gt;);
 
 <span class="kw">pub struct </span>XcmConfig;
 <span class="kw">impl </span>xcm_executor::Config <span class="kw">for </span>XcmConfig {
@@ -1237,6 +1250,7 @@
 	<span class="kw">type </span>UniversalAliases = Nothing;
 	<span class="kw">type </span>CallDispatcher = RuntimeCall;
 	<span class="kw">type </span>SafeCallFilter = Everything;
+	<span class="kw">type </span>Aliasers = Nothing;
 }
 
 <span class="doccomment">/// Local origins on this chain are allowed to dispatch XCM sends/executions.
@@ -1421,8 +1435,6 @@
 <span class="doccomment">/// Unchecked extrinsic type as expected by this runtime.
 </span><span class="kw">pub type </span>UncheckedExtrinsic =
 	generic::UncheckedExtrinsic&lt;Address, RuntimeCall, Signature, SignedExtra&gt;;
-<span class="doccomment">/// Extrinsic type that has already been checked.
-</span><span class="kw">pub type </span>CheckedExtrinsic = generic::CheckedExtrinsic&lt;AccountId, RuntimeCall, SignedExtra&gt;;
 <span class="doccomment">/// Executive: handles dispatch to the various modules.
 </span><span class="kw">pub type </span>Executive = frame_executive::Executive&lt;
 	Runtime,

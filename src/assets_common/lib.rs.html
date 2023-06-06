@@ -305,6 +305,7 @@
 <a href="#305" id="305">305</a>
 <a href="#306" id="306">306</a>
 <a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright (C) 2023 Parity Technologies (UK) Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -387,8 +388,9 @@
 </span><span class="kw">mod </span>tests {
 	<span class="kw">use super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use </span><span class="kw">crate</span>::matching::StartsWithExplicitGlobalConsensus;
+	<span class="kw">use </span>sp_runtime::traits::MaybeEquivalence;
 	<span class="kw">use </span>xcm::latest::prelude::<span class="kw-2">*</span>;
-	<span class="kw">use </span>xcm_executor::traits::{Convert, Error <span class="kw">as </span>MatchError, MatchesFungibles};
+	<span class="kw">use </span>xcm_executor::traits::{Error <span class="kw">as </span>MatchError, MatchesFungibles};
 
 	<span class="attr">#[test]
 	</span><span class="kw">fn </span>asset_id_for_trust_backed_assets_convert_works() {
@@ -400,15 +402,15 @@
 			MultiLocation::new(<span class="number">5</span>, X2(PalletInstance(<span class="number">13</span>), GeneralIndex(local_asset_id.into())));
 
 		<span class="macro">assert_eq!</span>(
-			AssetIdForTrustBackedAssetsConvert::&lt;TrustBackedAssetsPalletLocation&gt;::reverse_ref(
-				local_asset_id
+			AssetIdForTrustBackedAssetsConvert::&lt;TrustBackedAssetsPalletLocation&gt;::convert_back(
+				<span class="kw-2">&amp;</span>local_asset_id
 			)
 			.unwrap(),
 			expected_reverse_ref
 		);
 		<span class="macro">assert_eq!</span>(
-			AssetIdForTrustBackedAssetsConvert::&lt;TrustBackedAssetsPalletLocation&gt;::convert_ref(
-				expected_reverse_ref
+			AssetIdForTrustBackedAssetsConvert::&lt;TrustBackedAssetsPalletLocation&gt;::convert(
+				<span class="kw-2">&amp;</span>expected_reverse_ref
 			)
 			.unwrap(),
 			local_asset_id

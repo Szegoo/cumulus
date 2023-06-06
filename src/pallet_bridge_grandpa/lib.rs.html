@@ -1415,12 +1415,6 @@
 <a href="#1415" id="1415">1415</a>
 <a href="#1416" id="1416">1416</a>
 <a href="#1417" id="1417">1417</a>
-<a href="#1418" id="1418">1418</a>
-<a href="#1419" id="1419">1419</a>
-<a href="#1420" id="1420">1420</a>
-<a href="#1421" id="1421">1421</a>
-<a href="#1422" id="1422">1422</a>
-<a href="#1423" id="1423">1423</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.
 // This file is part of Parity Bridges Common.
 
@@ -1467,7 +1461,7 @@
 };
 <span class="kw">use </span>bp_runtime::{BlockNumberOf, HashOf, HasherOf, HeaderId, HeaderOf, OwnedBridgeModule};
 <span class="kw">use </span>finality_grandpa::voter_set::VoterSet;
-<span class="kw">use </span>frame_support::{dispatch::PostDispatchInfo, ensure};
+<span class="kw">use </span>frame_support::{dispatch::PostDispatchInfo, ensure, DefaultNoBound};
 <span class="kw">use </span>sp_consensus_grandpa::{ConsensusLog, GRANDPA_ENGINE_ID};
 <span class="kw">use </span>sp_runtime::{
 	traits::{Header <span class="kw">as </span>HeaderT, Zero},
@@ -1793,18 +1787,12 @@
 		StorageValue&lt;<span class="kw">_</span>, BasicOperatingMode, ValueQuery&gt;;
 
 	<span class="attr">#[pallet::genesis_config]
+	#[derive(DefaultNoBound)]
 	</span><span class="kw">pub struct </span>GenesisConfig&lt;T: Config&lt;I&gt;, I: <span class="lifetime">&#39;static </span>= ()&gt; {
 		<span class="doccomment">/// Optional module owner account.
 		</span><span class="kw">pub </span>owner: <span class="prelude-ty">Option</span>&lt;T::AccountId&gt;,
 		<span class="doccomment">/// Optional module initialization data.
 		</span><span class="kw">pub </span>init_data: <span class="prelude-ty">Option</span>&lt;<span class="kw">super</span>::InitializationData&lt;BridgedHeader&lt;T, I&gt;&gt;&gt;,
-	}
-
-	<span class="attr">#[cfg(feature = <span class="string">&quot;std&quot;</span>)]
-	</span><span class="kw">impl</span>&lt;T: Config&lt;I&gt;, I: <span class="lifetime">&#39;static</span>&gt; Default <span class="kw">for </span>GenesisConfig&lt;T, I&gt; {
-		<span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-			<span class="self">Self </span>{ owner: <span class="prelude-val">None</span>, init_data: <span class="prelude-val">None </span>}
-		}
 	}
 
 	<span class="attr">#[pallet::genesis_build]

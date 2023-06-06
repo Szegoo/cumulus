@@ -477,6 +477,7 @@
 <a href="#477" id="477">477</a>
 <a href="#478" id="478">478</a>
 <a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright (C) Parity Technologies (UK) Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -737,7 +738,7 @@
 			<span class="kw-2">&amp;</span>to,
 			<span class="comment">// We aren&#39;t able to track the XCM that initiated the fee deposit, so we create a
 			// fake message hash here
-			</span><span class="kw-2">&amp;</span>XcmContext::with_message_hash([<span class="number">0</span>; <span class="number">32</span>]),
+			</span><span class="kw-2">&amp;</span>XcmContext::with_message_id([<span class="number">0</span>; <span class="number">32</span>]),
 		)
 	}
 }
@@ -823,7 +824,7 @@
 			.into_iter()
 			.filter_map(|e| unwrap_pallet_xcm_event(e.event.encode()))
 			.find_map(|e| <span class="kw">match </span>e {
-				pallet_xcm::Event::Attempted(outcome) =&gt; <span class="prelude-val">Some</span>(outcome),
+				pallet_xcm::Event::Attempted { outcome } =&gt; <span class="prelude-val">Some</span>(outcome),
 				<span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
 			})
 			.expect(<span class="string">&quot;No `pallet_xcm::Event::Attempted(outcome)` event found!&quot;</span>);
@@ -842,7 +843,8 @@
 			.into_iter()
 			.filter_map(|e| unwrap_xcmp_queue_event(e.event.encode()))
 			.find_map(|e| <span class="kw">match </span>e {
-				cumulus_pallet_xcmp_queue::Event::XcmpMessageSent { message_hash } =&gt; message_hash,
+				cumulus_pallet_xcmp_queue::Event::XcmpMessageSent { message_hash } =&gt;
+					<span class="prelude-val">Some</span>(message_hash),
 				<span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
 			})
 	}

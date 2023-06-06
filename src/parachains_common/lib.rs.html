@@ -170,12 +170,12 @@
 	<span class="comment">// Aura consensus authority.
 	</span><span class="kw">pub type </span>AuraId = sp_consensus_aura::sr25519::AuthorityId;
 
-	<span class="comment">// Aura consensus authority used by Statemint.
+	<span class="comment">// Aura consensus authority used by Asset Hub Polkadot.
 	//
 	// Because of registering the authorities with an ed25519 key before switching from Shell
-	// to Statemint, we were required to deploy a hotfix that changed Statemint to ed22519.
-	// In the future that may change again.
-	</span><span class="kw">pub type </span>StatemintAuraId = sp_consensus_aura::ed25519::AuthorityId;
+	// to Asset Hub Polkadot, we were required to deploy a hotfix that changed Asset Hub Polkadot&#39;s
+	// Aura keys to ed22519. In the future that may change again.
+	</span><span class="kw">pub type </span>AssetHubPolkadotAuraId = sp_consensus_aura::ed25519::AuthorityId;
 
 	<span class="comment">// Id used for identifying assets.
 	</span><span class="kw">pub type </span>AssetIdForTrustBackedAssets = u32;

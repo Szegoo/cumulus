@@ -156,6 +156,7 @@
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright (C) 2023 Parity Technologies (UK) Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -175,10 +176,11 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::runtime_api::FungiblesAccessError;
 <span class="kw">use </span>frame_support::traits::Contains;
+<span class="kw">use </span>sp_runtime::traits::MaybeEquivalence;
 <span class="kw">use </span>sp_std::{borrow::Borrow, vec::Vec};
 <span class="kw">use </span>xcm::latest::{MultiAsset, MultiLocation};
 <span class="kw">use </span>xcm_builder::{ConvertedConcreteId, MatchedConvertedConcreteId};
-<span class="kw">use </span>xcm_executor::traits::{Convert, MatchesFungibles};
+<span class="kw">use </span>xcm_executor::traits::MatchesFungibles;
 
 <span class="doccomment">/// Converting any [`(AssetId, Balance)`] to [`MultiAsset`]
 </span><span class="kw">pub trait </span>MultiAssetConverter&lt;AssetId, Balance, ConvertAssetId, ConvertBalance&gt;:
@@ -186,8 +188,8 @@
 <span class="kw">where
 	</span>AssetId: Clone,
 	Balance: Clone,
-	ConvertAssetId: Convert&lt;MultiLocation, AssetId&gt;,
-	ConvertBalance: Convert&lt;u128, Balance&gt;,
+	ConvertAssetId: MaybeEquivalence&lt;MultiLocation, AssetId&gt;,
+	ConvertBalance: MaybeEquivalence&lt;u128, Balance&gt;,
 {
 	<span class="kw">fn </span>convert_ref(
 		value: <span class="kw">impl </span>Borrow&lt;(AssetId, Balance)&gt;,
@@ -197,8 +199,8 @@
 <span class="kw">impl</span>&lt;
 		AssetId: Clone,
 		Balance: Clone,
-		ConvertAssetId: Convert&lt;MultiLocation, AssetId&gt;,
-		ConvertBalance: Convert&lt;u128, Balance&gt;,
+		ConvertAssetId: MaybeEquivalence&lt;MultiLocation, AssetId&gt;,
+		ConvertBalance: MaybeEquivalence&lt;u128, Balance&gt;,
 	&gt; MultiAssetConverter&lt;AssetId, Balance, ConvertAssetId, ConvertBalance&gt;
 	<span class="kw">for </span>ConvertedConcreteId&lt;AssetId, Balance, ConvertAssetId, ConvertBalance&gt;
 {
@@ -206,12 +208,12 @@
 		value: <span class="kw">impl </span>Borrow&lt;(AssetId, Balance)&gt;,
 	) -&gt; <span class="prelude-ty">Result</span>&lt;MultiAsset, FungiblesAccessError&gt; {
 		<span class="kw">let </span>(asset_id, balance) = value.borrow();
-		<span class="kw">match </span>ConvertAssetId::reverse_ref(asset_id) {
-			<span class="prelude-val">Ok</span>(asset_id_as_multilocation) =&gt; <span class="kw">match </span>ConvertBalance::reverse_ref(balance) {
-				<span class="prelude-val">Ok</span>(amount) =&gt; <span class="prelude-val">Ok</span>((asset_id_as_multilocation, amount).into()),
-				<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(FungiblesAccessError::AmountToBalanceConversionFailed),
+		<span class="kw">match </span>ConvertAssetId::convert_back(asset_id) {
+			<span class="prelude-val">Some</span>(asset_id_as_multilocation) =&gt; <span class="kw">match </span>ConvertBalance::convert_back(balance) {
+				<span class="prelude-val">Some</span>(amount) =&gt; <span class="prelude-val">Ok</span>((asset_id_as_multilocation, amount).into()),
+				<span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(FungiblesAccessError::AmountToBalanceConversionFailed),
 			},
-			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(FungiblesAccessError::AssetIdConversionFailed),
+			<span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(FungiblesAccessError::AssetIdConversionFailed),
 		}
 	}
 }
@@ -220,8 +222,8 @@
 		AssetId: Clone,
 		Balance: Clone,
 		MatchAssetId: Contains&lt;MultiLocation&gt;,
-		ConvertAssetId: Convert&lt;MultiLocation, AssetId&gt;,
-		ConvertBalance: Convert&lt;u128, Balance&gt;,
+		ConvertAssetId: MaybeEquivalence&lt;MultiLocation, AssetId&gt;,
+		ConvertBalance: MaybeEquivalence&lt;u128, Balance&gt;,
 	&gt; MultiAssetConverter&lt;AssetId, Balance, ConvertAssetId, ConvertBalance&gt;
 	<span class="kw">for </span>MatchedConvertedConcreteId&lt;AssetId, Balance, MatchAssetId, ConvertAssetId, ConvertBalance&gt;
 {
@@ -229,12 +231,12 @@
 		value: <span class="kw">impl </span>Borrow&lt;(AssetId, Balance)&gt;,
 	) -&gt; <span class="prelude-ty">Result</span>&lt;MultiAsset, FungiblesAccessError&gt; {
 		<span class="kw">let </span>(asset_id, balance) = value.borrow();
-		<span class="kw">match </span>ConvertAssetId::reverse_ref(asset_id) {
-			<span class="prelude-val">Ok</span>(asset_id_as_multilocation) =&gt; <span class="kw">match </span>ConvertBalance::reverse_ref(balance) {
-				<span class="prelude-val">Ok</span>(amount) =&gt; <span class="prelude-val">Ok</span>((asset_id_as_multilocation, amount).into()),
-				<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(FungiblesAccessError::AmountToBalanceConversionFailed),
+		<span class="kw">match </span>ConvertAssetId::convert_back(asset_id) {
+			<span class="prelude-val">Some</span>(asset_id_as_multilocation) =&gt; <span class="kw">match </span>ConvertBalance::convert_back(balance) {
+				<span class="prelude-val">Some</span>(amount) =&gt; <span class="prelude-val">Ok</span>((asset_id_as_multilocation, amount).into()),
+				<span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(FungiblesAccessError::AmountToBalanceConversionFailed),
 			},
-			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(FungiblesAccessError::AssetIdConversionFailed),
+			<span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(FungiblesAccessError::AssetIdConversionFailed),
 		}
 	}
 }
@@ -246,8 +248,8 @@
 <span class="kw">where
 	</span>AssetId: Clone + <span class="lifetime">&#39;a</span>,
 	Balance: Clone + <span class="lifetime">&#39;a</span>,
-	ConvertAssetId: Convert&lt;MultiLocation, AssetId&gt;,
-	ConvertBalance: Convert&lt;u128, Balance&gt;,
+	ConvertAssetId: MaybeEquivalence&lt;MultiLocation, AssetId&gt;,
+	ConvertBalance: MaybeEquivalence&lt;u128, Balance&gt;,
 	Converter: MultiAssetConverter&lt;AssetId, Balance, ConvertAssetId, ConvertBalance&gt;,
 {
 	items.map(Converter::convert_ref).collect()

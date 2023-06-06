@@ -967,6 +967,13 @@
 <a href="#967" id="967">967</a>
 <a href="#968" id="968">968</a>
 <a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2023 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -985,7 +992,8 @@
 
 </span><span class="doccomment">//! Module contains predefined test-case scenarios for `Runtime` with bridging capabilities.
 
-</span><span class="kw">use </span>bp_messages::{
+</span><span class="kw">use </span>assert_matches::assert_matches;
+<span class="kw">use </span>bp_messages::{
 	target_chain::{DispatchMessage, DispatchMessageData, MessageDispatch, SourceHeaderChain},
 	LaneId, MessageKey, OutboundLaneData, Weight,
 };
@@ -1431,7 +1439,7 @@
 			<span class="kw">let </span>relayer_id_on_source: AccountId32 = relayer_at_source.public().into();
 
 			<span class="kw">let </span>xcm = <span class="macro">vec!</span>[xcm::v3::Instruction::&lt;()&gt;::ClearOrigin; <span class="number">42</span>];
-			<span class="kw">let </span>expected_dispatch = xcm::VersionedXcm::&lt;()&gt;::V3(xcm.clone().into());
+			<span class="kw">let </span>expected_dispatch = xcm::latest::Xcm::&lt;()&gt;(xcm.clone());
 			<span class="comment">// generate bridged relay chain finality, parachain heads and message proofs,
 			// to be submitted by relayer to this chain.
 			</span><span class="kw">let </span>(
@@ -1528,6 +1536,9 @@
 				sibling_parachain_id.into(),
 			)
 			.unwrap();
+			<span class="kw">let </span><span class="kw-2">mut </span>dispatched = xcm::latest::Xcm::&lt;()&gt;::try_from(dispatched).unwrap();
+			<span class="comment">// We use `WithUniqueTopic`, so expect a trailing `SetTopic`.
+			</span><span class="macro">assert_matches!</span>(dispatched.<span class="number">0</span>.pop(), <span class="prelude-val">Some</span>(SetTopic(..)));
 			<span class="macro">assert_eq!</span>(dispatched, expected_dispatch);
 		})
 }
@@ -1636,8 +1647,8 @@
 			<span class="kw">let </span>para_header_number = <span class="number">5</span>;
 			<span class="kw">let </span>relay_header_number = <span class="number">1</span>;
 
-			<span class="kw">let </span>xcm = <span class="macro">vec!</span>[xcm::v3::Instruction::&lt;()&gt;::ClearOrigin; <span class="number">42</span>];
-			<span class="kw">let </span>expected_dispatch = xcm::VersionedXcm::&lt;()&gt;::V3(xcm.clone().into());
+			<span class="kw">let </span>xcm = <span class="macro">vec!</span>[xcm::latest::Instruction::&lt;()&gt;::ClearOrigin; <span class="number">42</span>];
+			<span class="kw">let </span>expected_dispatch = xcm::latest::Xcm::&lt;()&gt;(xcm.clone());
 			<span class="comment">// generate bridged relay chain finality, parachain heads and message proofs,
 			// to be submitted by relayer to this chain.
 			</span><span class="kw">let </span>(
@@ -1745,6 +1756,9 @@
 				sibling_parachain_id.into(),
 			)
 			.unwrap();
+			<span class="kw">let </span><span class="kw-2">mut </span>dispatched = xcm::latest::Xcm::&lt;()&gt;::try_from(dispatched).unwrap();
+			<span class="comment">// We use `WithUniqueTopic`, so expect a trailing `SetTopic`.
+			</span><span class="macro">assert_matches!</span>(dispatched.<span class="number">0</span>.pop(), <span class="prelude-val">Some</span>(SetTopic(..)));
 			<span class="macro">assert_eq!</span>(dispatched, expected_dispatch);
 		})
 }

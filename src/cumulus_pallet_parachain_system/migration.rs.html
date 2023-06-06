@@ -83,6 +83,11 @@
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
 <a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -101,32 +106,37 @@
 
 </span><span class="kw">use crate</span>::{Config, Pallet, ReservedDmpWeightOverride, ReservedXcmpWeightOverride};
 <span class="kw">use </span>frame_support::{
-	traits::{Get, StorageVersion},
+	pallet_prelude::<span class="kw-2">*</span>,
+	traits::{Get, OnRuntimeUpgrade, StorageVersion},
 	weights::Weight,
 };
 
 <span class="doccomment">/// The current storage version.
 </span><span class="kw">pub const </span>STORAGE_VERSION: StorageVersion = StorageVersion::new(<span class="number">2</span>);
 
-<span class="doccomment">/// Call this during the next runtime upgrade for this module.
-</span><span class="kw">pub fn </span>on_runtime_upgrade&lt;T: Config&gt;() -&gt; Weight {
-	<span class="kw">let </span><span class="kw-2">mut </span>weight: Weight = T::DbWeight::get().reads(<span class="number">2</span>);
+<span class="doccomment">/// Migrates the pallet storage to the most recent version.
+</span><span class="kw">pub struct </span>Migration&lt;T: Config&gt;(PhantomData&lt;T&gt;);
 
-	<span class="kw">if </span>StorageVersion::get::&lt;Pallet&lt;T&gt;&gt;() == <span class="number">0 </span>{
-		weight = weight
-			.saturating_add(v1::migrate::&lt;T&gt;())
-			.saturating_add(T::DbWeight::get().writes(<span class="number">1</span>));
-		StorageVersion::new(<span class="number">1</span>).put::&lt;Pallet&lt;T&gt;&gt;();
+<span class="kw">impl</span>&lt;T: Config&gt; OnRuntimeUpgrade <span class="kw">for </span>Migration&lt;T&gt; {
+	<span class="kw">fn </span>on_runtime_upgrade() -&gt; Weight {
+		<span class="kw">let </span><span class="kw-2">mut </span>weight: Weight = T::DbWeight::get().reads(<span class="number">2</span>);
+
+		<span class="kw">if </span>StorageVersion::get::&lt;Pallet&lt;T&gt;&gt;() == <span class="number">0 </span>{
+			weight = weight
+				.saturating_add(v1::migrate::&lt;T&gt;())
+				.saturating_add(T::DbWeight::get().writes(<span class="number">1</span>));
+			StorageVersion::new(<span class="number">1</span>).put::&lt;Pallet&lt;T&gt;&gt;();
+		}
+
+		<span class="kw">if </span>StorageVersion::get::&lt;Pallet&lt;T&gt;&gt;() == <span class="number">1 </span>{
+			weight = weight
+				.saturating_add(v2::migrate::&lt;T&gt;())
+				.saturating_add(T::DbWeight::get().writes(<span class="number">1</span>));
+			StorageVersion::new(<span class="number">2</span>).put::&lt;Pallet&lt;T&gt;&gt;();
+		}
+
+		weight
 	}
-
-	<span class="kw">if </span>StorageVersion::get::&lt;Pallet&lt;T&gt;&gt;() == <span class="number">1 </span>{
-		weight = weight
-			.saturating_add(v2::migrate::&lt;T&gt;())
-			.saturating_add(T::DbWeight::get().writes(<span class="number">1</span>));
-		STORAGE_VERSION.put::&lt;Pallet&lt;T&gt;&gt;();
-	}
-
-	weight
 }
 
 <span class="doccomment">/// V2: Migrate to 2D weights for ReservedXcmpWeightOverride and ReservedDmpWeightOverride.

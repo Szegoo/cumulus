@@ -356,6 +356,9 @@
 <a href="#356" id="356">356</a>
 <a href="#357" id="357">357</a>
 <a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2022 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -388,20 +391,18 @@
 };
 <span class="kw">use </span>frame_system::EnsureRoot;
 <span class="kw">use </span>pallet_xcm::XcmPassthrough;
-<span class="kw">use </span>parachains_common::{
-	impls::ToStakingPot,
-	xcm_config::{ConcreteNativeAssetFrom, DenyReserveTransferToRelayChain, DenyThenTry},
-};
+<span class="kw">use </span>parachains_common::{impls::ToStakingPot, xcm_config::ConcreteNativeAssetFrom};
 <span class="kw">use </span>polkadot_parachain::primitives::Sibling;
 <span class="kw">use </span>sp_core::Get;
 <span class="kw">use </span>xcm::latest::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>xcm_builder::{
 	AccountId32Aliases, AllowExplicitUnpaidExecutionFrom, AllowKnownQueryResponses,
 	AllowSubscriptionsFrom, AllowTopLevelPaidExecutionFrom, AllowUnpaidExecutionFrom,
-	CurrencyAdapter, EnsureXcmOrigin, IsConcrete, ParentAsSuperuser, ParentIsPreset,
-	RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia,
-	SignedAccountId32AsNative, SignedToAccountId32, SovereignSignedViaLocation, TakeWeightCredit,
-	UsingComponents, WeightInfoBounds, WithComputedOrigin,
+	CurrencyAdapter, DenyReserveTransferToRelayChain, DenyThenTry, EnsureXcmOrigin, IsConcrete,
+	ParentAsSuperuser, ParentIsPreset, RelayChainAsNative, SiblingParachainAsNative,
+	SiblingParachainConvertsVia, SignedAccountId32AsNative, SignedToAccountId32,
+	SovereignSignedViaLocation, TakeWeightCredit, TrailingSetTopicAsId, UsingComponents,
+	WeightInfoBounds, WithComputedOrigin, WithUniqueTopic,
 };
 <span class="kw">use </span>xcm_executor::{
 	traits::{ExportXcm, WithOriginFilter},
@@ -538,7 +539,9 @@
 						pallet_collator_selection::Call::set_candidacy_bond { .. } |
 						pallet_collator_selection::Call::register_as_candidate { .. } |
 						pallet_collator_selection::Call::leave_intent { .. } |
-						pallet_collator_selection::Call::set_invulnerables { .. },
+						pallet_collator_selection::Call::set_invulnerables { .. } |
+						pallet_collator_selection::Call::add_invulnerable { .. } |
+						pallet_collator_selection::Call::remove_invulnerable { .. },
 				) | RuntimeCall::Session(pallet_session::Call::purge_keys { .. }) |
 				RuntimeCall::XcmpQueue(..) |
 				RuntimeCall::DmpQueue(..) |
@@ -555,29 +558,31 @@
 	}
 }
 
-<span class="kw">pub type </span>Barrier = DenyThenTry&lt;
-	DenyReserveTransferToRelayChain,
-	(
-		<span class="comment">// Allow local users to buy weight credit.
-		</span>TakeWeightCredit,
-		<span class="comment">// Expected responses are OK.
-		</span>AllowKnownQueryResponses&lt;PolkadotXcm&gt;,
-		WithComputedOrigin&lt;
-			(
-				<span class="comment">// If the message is one that immediately attemps to pay for execution, then allow it.
-				</span>AllowTopLevelPaidExecutionFrom&lt;Everything&gt;,
-				<span class="comment">// Parent and its pluralities (i.e. governance bodies) get free execution.
-				</span>AllowExplicitUnpaidExecutionFrom&lt;ParentOrParentsPlurality&gt;,
-				<span class="comment">// Subscriptions for version tracking are OK.
-				</span>AllowSubscriptionsFrom&lt;ParentOrSiblings&gt;,
-			),
-			UniversalLocation,
-			ConstU32&lt;<span class="number">8</span>&gt;,
-		&gt;,
-		<span class="comment">// TODO:check-parameter - (https://github.com/paritytech/parity-bridges-common/issues/2084)
-		// remove this and extend `AllowExplicitUnpaidExecutionFrom` with &quot;or SystemParachains&quot; once merged https://github.com/paritytech/polkadot/pull/7005
-		</span>AllowUnpaidExecutionFrom&lt;Everything&gt;,
-	),
+<span class="kw">pub type </span>Barrier = TrailingSetTopicAsId&lt;
+	DenyThenTry&lt;
+		DenyReserveTransferToRelayChain,
+		(
+			<span class="comment">// Allow local users to buy weight credit.
+			</span>TakeWeightCredit,
+			<span class="comment">// Expected responses are OK.
+			</span>AllowKnownQueryResponses&lt;PolkadotXcm&gt;,
+			WithComputedOrigin&lt;
+				(
+					<span class="comment">// If the message is one that immediately attemps to pay for execution, then allow it.
+					</span>AllowTopLevelPaidExecutionFrom&lt;Everything&gt;,
+					<span class="comment">// Parent and its pluralities (i.e. governance bodies) get free execution.
+					</span>AllowExplicitUnpaidExecutionFrom&lt;ParentOrParentsPlurality&gt;,
+					<span class="comment">// Subscriptions for version tracking are OK.
+					</span>AllowSubscriptionsFrom&lt;ParentOrSiblings&gt;,
+				),
+				UniversalLocation,
+				ConstU32&lt;<span class="number">8</span>&gt;,
+			&gt;,
+			<span class="comment">// TODO:check-parameter - (https://github.com/paritytech/parity-bridges-common/issues/2084)
+			// remove this and extend `AllowExplicitUnpaidExecutionFrom` with &quot;or SystemParachains&quot; once merged https://github.com/paritytech/polkadot/pull/7005
+			</span>AllowUnpaidExecutionFrom&lt;Everything&gt;,
+		),
+	&gt;,
 &gt;;
 
 <span class="kw">pub struct </span>XcmConfig;
@@ -613,6 +618,7 @@
 	<span class="kw">type </span>UniversalAliases = Nothing;
 	<span class="kw">type </span>CallDispatcher = WithOriginFilter&lt;SafeCallFilter&gt;;
 	<span class="kw">type </span>SafeCallFilter = SafeCallFilter;
+	<span class="kw">type </span>Aliasers = Nothing;
 }
 
 <span class="doccomment">/// Converts a local signed origin into an XCM multilocation.
@@ -621,12 +627,12 @@
 
 <span class="doccomment">/// The means for routing XCM messages which are not for local execution into the right message
 /// queues.
-</span><span class="kw">pub type </span>XcmRouter = (
+</span><span class="kw">pub type </span>XcmRouter = WithUniqueTopic&lt;(
 	<span class="comment">// Two routers - use UMP to communicate with the relay chain:
 	</span>cumulus_primitives_utility::ParentAsUmp&lt;ParachainSystem, PolkadotXcm, ()&gt;,
 	<span class="comment">// ..and XCMP to communicate with the sibling chains.
 	</span>XcmpQueue,
-);
+)&gt;;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;runtime-benchmarks&quot;</span>)]
 </span><span class="macro">parameter_types! </span>{

@@ -118,6 +118,9 @@
 <a href="#118" id="118">118</a>
 <a href="#119" id="119">119</a>
 <a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2022 Parity Technologies (UK) Ltd.
 // This file is part of Polkadot.
 
@@ -139,31 +142,34 @@
 </span><span class="kw">use crate</span>::{Config, Configuration, Overweight, Pallet, DEFAULT_POV_SIZE};
 <span class="kw">use </span>frame_support::{
 	pallet_prelude::<span class="kw-2">*</span>,
-	traits::StorageVersion,
+	traits::{OnRuntimeUpgrade, StorageVersion},
 	weights::{constants::WEIGHT_REF_TIME_PER_MILLIS, Weight},
 };
 
 <span class="doccomment">/// The current storage version.
-</span><span class="kw">pub const </span>STORAGE_VERSION: StorageVersion = StorageVersion::new(<span class="number">1</span>);
+</span><span class="kw">pub const </span>STORAGE_VERSION: StorageVersion = StorageVersion::new(<span class="number">2</span>);
 
-<span class="doccomment">/// Migrates the pallet storage to the most recent version, checking and setting the
-/// `StorageVersion`.
-</span><span class="kw">pub fn </span>migrate_to_latest&lt;T: Config&gt;() -&gt; Weight {
-	<span class="kw">let </span><span class="kw-2">mut </span>weight = T::DbWeight::get().reads(<span class="number">1</span>);
+<span class="doccomment">/// Migrates the pallet storage to the most recent version.
+</span><span class="kw">pub struct </span>Migration&lt;T: Config&gt;(PhantomData&lt;T&gt;);
 
-	<span class="kw">if </span>StorageVersion::get::&lt;Pallet&lt;T&gt;&gt;() == <span class="number">0 </span>{
-		weight.saturating_accrue(migrate_to_v1::&lt;T&gt;());
-		StorageVersion::new(<span class="number">1</span>).put::&lt;Pallet&lt;T&gt;&gt;();
-		weight.saturating_accrue(T::DbWeight::get().writes(<span class="number">1</span>));
+<span class="kw">impl</span>&lt;T: Config&gt; OnRuntimeUpgrade <span class="kw">for </span>Migration&lt;T&gt; {
+	<span class="kw">fn </span>on_runtime_upgrade() -&gt; Weight {
+		<span class="kw">let </span><span class="kw-2">mut </span>weight = T::DbWeight::get().reads(<span class="number">1</span>);
+
+		<span class="kw">if </span>StorageVersion::get::&lt;Pallet&lt;T&gt;&gt;() == <span class="number">0 </span>{
+			weight.saturating_accrue(migrate_to_v1::&lt;T&gt;());
+			StorageVersion::new(<span class="number">1</span>).put::&lt;Pallet&lt;T&gt;&gt;();
+			weight.saturating_accrue(T::DbWeight::get().writes(<span class="number">1</span>));
+		}
+
+		<span class="kw">if </span>StorageVersion::get::&lt;Pallet&lt;T&gt;&gt;() == <span class="number">1 </span>{
+			weight.saturating_accrue(migrate_to_v2::&lt;T&gt;());
+			StorageVersion::new(<span class="number">2</span>).put::&lt;Pallet&lt;T&gt;&gt;();
+			weight.saturating_accrue(T::DbWeight::get().writes(<span class="number">1</span>));
+		}
+
+		weight
 	}
-
-	<span class="kw">if </span>StorageVersion::get::&lt;Pallet&lt;T&gt;&gt;() == <span class="number">1 </span>{
-		weight.saturating_accrue(migrate_to_v2::&lt;T&gt;());
-		StorageVersion::new(<span class="number">2</span>).put::&lt;Pallet&lt;T&gt;&gt;();
-		weight.saturating_accrue(T::DbWeight::get().writes(<span class="number">1</span>));
-	}
-
-	weight
 }
 
 <span class="kw">mod </span>v0 {

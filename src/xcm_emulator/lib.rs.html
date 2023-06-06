@@ -955,6 +955,7 @@
 <a href="#955" id="955">955</a>
 <a href="#956" id="956">956</a>
 <a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2023 Parity Technologies (UK) Ltd.
 // This file is part of Polkadot.
 
@@ -984,7 +985,7 @@
 <span class="kw">pub use </span>paste;
 <span class="kw">pub use </span>sp_arithmetic::traits::Bounded;
 <span class="kw">pub use </span>sp_core::storage::Storage;
-<span class="kw">pub use </span>sp_io::TestExternalities;
+<span class="kw">pub use </span>sp_io;
 <span class="kw">pub use </span>sp_std::{cell::RefCell, collections::vec_deque::VecDeque, marker::PhantomData};
 <span class="kw">pub use </span>sp_trie::StorageProof;
 
@@ -1152,7 +1153,8 @@
 </span><span class="macro">macro_rules! </span>decl_test_relay_chains {
 	(
 		$(
-			<span class="kw">pub struct </span><span class="macro-nonterminal">$name</span>:ident {
+			<span class="attr">#[api_version(<span class="macro-nonterminal">$api_version</span>:tt)]
+			</span><span class="kw">pub struct </span><span class="macro-nonterminal">$name</span>:ident {
 				genesis = <span class="macro-nonterminal">$genesis</span>:expr,
 				on_init = <span class="macro-nonterminal">$on_init</span>:expr,
 				runtime = {
@@ -1237,7 +1239,7 @@
 				}
 			}
 
-			<span class="macro-nonterminal">$</span><span class="macro">crate::__impl_test_ext_for_relay_chain!</span>(<span class="macro-nonterminal">$name</span>, <span class="macro-nonterminal">$genesis</span>, <span class="macro-nonterminal">$on_init</span>);
+			<span class="macro-nonterminal">$</span><span class="macro">crate::__impl_test_ext_for_relay_chain!</span>(<span class="macro-nonterminal">$name</span>, <span class="macro-nonterminal">$genesis</span>, <span class="macro-nonterminal">$on_init</span>, <span class="macro-nonterminal">$api_version</span>);
 		)+
 	};
 }
@@ -1245,20 +1247,20 @@
 <span class="attr">#[macro_export]
 </span><span class="macro">macro_rules! </span>__impl_test_ext_for_relay_chain {
 	<span class="comment">// entry point: generate ext name
-	</span>(<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$genesis</span>:expr, <span class="macro-nonterminal">$on_init</span>:expr) =&gt; {
+	</span>(<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$genesis</span>:expr, <span class="macro-nonterminal">$on_init</span>:expr, <span class="macro-nonterminal">$api_version</span>:tt) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::paste::paste! </span>{
-			<span class="macro-nonterminal">$</span><span class="macro">crate::__impl_test_ext_for_relay_chain!</span>(@<span class="kw">impl </span><span class="macro-nonterminal">$name</span>, <span class="macro-nonterminal">$genesis</span>, <span class="macro-nonterminal">$on_init</span>, [&lt;EXT_ <span class="macro-nonterminal">$name</span>:upper&gt;]);
+			<span class="macro-nonterminal">$</span><span class="macro">crate::__impl_test_ext_for_relay_chain!</span>(@<span class="kw">impl </span><span class="macro-nonterminal">$name</span>, <span class="macro-nonterminal">$genesis</span>, <span class="macro-nonterminal">$on_init</span>, [&lt;ParachainHostV <span class="macro-nonterminal">$api_version</span>&gt;], [&lt;EXT_ <span class="macro-nonterminal">$name</span>:upper&gt;]);
 		}
 	};
 	<span class="comment">// impl
-	</span>(@<span class="kw">impl </span><span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$genesis</span>:expr, <span class="macro-nonterminal">$on_init</span>:expr, <span class="macro-nonterminal">$ext_name</span>:ident) =&gt; {
+	</span>(@<span class="kw">impl </span><span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$genesis</span>:expr, <span class="macro-nonterminal">$on_init</span>:expr, <span class="macro-nonterminal">$api_version</span>:ident, <span class="macro-nonterminal">$ext_name</span>:ident) =&gt; {
 		<span class="macro">thread_local! </span>{
-			<span class="kw">pub static </span><span class="macro-nonterminal">$ext_name</span>: <span class="macro-nonterminal">$crate::RefCell</span>&lt;<span class="macro-nonterminal">$crate::TestExternalities</span>&gt;
+			<span class="kw">pub static </span><span class="macro-nonterminal">$ext_name</span>: <span class="macro-nonterminal">$crate::RefCell</span>&lt;<span class="macro-nonterminal">$crate::sp_io::TestExternalities</span>&gt;
 				= <span class="macro-nonterminal">$crate::RefCell::new</span>(&lt;<span class="macro-nonterminal">$name</span>&gt;::build_new_ext(<span class="macro-nonterminal">$genesis</span>));
 		}
 
 		<span class="kw">impl </span>TestExt <span class="kw">for </span><span class="macro-nonterminal">$name </span>{
-			<span class="kw">fn </span>build_new_ext(storage: <span class="macro-nonterminal">$crate::Storage</span>) -&gt; <span class="macro-nonterminal">$crate::TestExternalities </span>{
+			<span class="kw">fn </span>build_new_ext(storage: <span class="macro-nonterminal">$crate::Storage</span>) -&gt; <span class="macro-nonterminal">$crate::sp_io::TestExternalities </span>{
 				<span class="kw">let </span><span class="kw-2">mut </span>ext = sp_io::TestExternalities::new(storage);
 				ext.execute_with(|| {
 					<span class="attr">#[allow(clippy::no_effect)]
@@ -1269,7 +1271,7 @@
 				ext
 			}
 
-			<span class="kw">fn </span>new_ext() -&gt; <span class="macro-nonterminal">$crate::TestExternalities </span>{
+			<span class="kw">fn </span>new_ext() -&gt; <span class="macro-nonterminal">$crate::sp_io::TestExternalities </span>{
 				&lt;<span class="macro-nonterminal">$name</span>&gt;::build_new_ext(<span class="macro-nonterminal">$genesis</span>)
 			}
 
@@ -1287,7 +1289,7 @@
 				<span class="comment">// send messages if needed
 				</span><span class="macro-nonterminal">$ext_name</span>.with(|v| {
 					v.borrow_mut().execute_with(|| {
-						<span class="kw">use </span><span class="macro-nonterminal">$crate::polkadot_primitives::runtime_api::runtime_decl_for_parachain_host::ParachainHostV4</span>;
+						<span class="kw">use </span><span class="macro-nonterminal">$crate::polkadot_primitives::runtime_api::runtime_decl_for_parachain_host</span>::<span class="macro-nonterminal">$api_version</span>;
 
 						<span class="comment">//TODO: mark sent count &amp; filter out sent msg
 						</span><span class="kw">for </span>para_id <span class="kw">in </span>&lt;<span class="macro-nonterminal">$name</span>&gt;::para_ids() {
@@ -1345,7 +1347,7 @@
 			}
 
 			<span class="kw">pub fn </span>sovereign_account_id_of(location: <span class="macro-nonterminal">$crate::MultiLocation</span>) -&gt; <span class="macro-nonterminal">$crate::AccountId </span>{
-				&lt;<span class="self">Self </span><span class="kw">as </span>RelayChain&gt;::SovereignAccountOf::convert(location.into()).unwrap()
+				&lt;<span class="self">Self </span><span class="kw">as </span>RelayChain&gt;::SovereignAccountOf::convert_location(<span class="kw-2">&amp;</span>location).unwrap()
 			}
 
 			<span class="kw">pub fn </span>fund_accounts(accounts: Vec&lt;(AccountId, Balance)&gt;) {
@@ -1480,12 +1482,12 @@
 	<span class="comment">// impl
 	</span>(@<span class="kw">impl </span><span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$genesis</span>:expr, <span class="macro-nonterminal">$on_init</span>:expr, <span class="macro-nonterminal">$ext_name</span>:ident) =&gt; {
 		<span class="macro">thread_local! </span>{
-			<span class="kw">pub static </span><span class="macro-nonterminal">$ext_name</span>: <span class="macro-nonterminal">$crate::RefCell</span>&lt;<span class="macro-nonterminal">$crate::TestExternalities</span>&gt;
+			<span class="kw">pub static </span><span class="macro-nonterminal">$ext_name</span>: <span class="macro-nonterminal">$crate::RefCell</span>&lt;<span class="macro-nonterminal">$crate::sp_io::TestExternalities</span>&gt;
 				= <span class="macro-nonterminal">$crate::RefCell::new</span>(&lt;<span class="macro-nonterminal">$name</span>&gt;::build_new_ext(<span class="macro-nonterminal">$genesis</span>));
 		}
 
 		<span class="kw">impl </span>TestExt <span class="kw">for </span><span class="macro-nonterminal">$name </span>{
-			<span class="kw">fn </span>build_new_ext(storage: <span class="macro-nonterminal">$crate::Storage</span>) -&gt; <span class="macro-nonterminal">$crate::TestExternalities </span>{
+			<span class="kw">fn </span>build_new_ext(storage: <span class="macro-nonterminal">$crate::Storage</span>) -&gt; <span class="macro-nonterminal">$crate::sp_io::TestExternalities </span>{
 				<span class="kw">let </span><span class="kw-2">mut </span>ext = sp_io::TestExternalities::new(storage);
 				ext.execute_with(|| {
 					<span class="attr">#[allow(clippy::no_effect)]
@@ -1496,7 +1498,7 @@
 				ext
 			}
 
-			<span class="kw">fn </span>new_ext() -&gt; <span class="macro-nonterminal">$crate::TestExternalities </span>{
+			<span class="kw">fn </span>new_ext() -&gt; <span class="macro-nonterminal">$crate::sp_io::TestExternalities </span>{
 				&lt;<span class="macro-nonterminal">$name</span>&gt;::build_new_ext(<span class="macro-nonterminal">$genesis</span>)
 			}
 
@@ -1610,7 +1612,7 @@
 			}
 
 			<span class="kw">pub fn </span>sovereign_account_id_of(location: <span class="macro-nonterminal">$crate::MultiLocation</span>) -&gt; <span class="macro-nonterminal">$crate::AccountId </span>{
-				&lt;<span class="self">Self </span><span class="kw">as </span>Parachain&gt;::LocationToAccountId::convert(location.into()).unwrap()
+				&lt;<span class="self">Self </span><span class="kw">as </span>Parachain&gt;::LocationToAccountId::convert_location(<span class="kw-2">&amp;</span>location).unwrap()
 			}
 
 			<span class="kw">pub fn </span>fund_accounts(accounts: Vec&lt;(AccountId, Balance)&gt;) {

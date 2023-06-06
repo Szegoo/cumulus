@@ -95,6 +95,7 @@
 <span class="kw">use </span>sp_core::{Pair, Public};
 <span class="kw">use </span>sp_runtime::traits::{IdentifyAccount, Verify};
 
+<span class="kw">pub mod </span>asset_hubs;
 <span class="kw">pub mod </span>bridge_hubs;
 <span class="kw">pub mod </span>collectives;
 <span class="kw">pub mod </span>contracts;
@@ -103,7 +104,6 @@
 <span class="kw">pub mod </span>rococo_parachain;
 <span class="kw">pub mod </span>seedling;
 <span class="kw">pub mod </span>shell;
-<span class="kw">pub mod </span>statemint;
 
 <span class="doccomment">/// The default XCM version to set in genesis config.
 </span><span class="kw">const </span>SAFE_XCM_VERSION: u32 = xcm::prelude::XCM_VERSION;

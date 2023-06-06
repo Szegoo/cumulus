@@ -1190,6 +1190,8 @@
 <a href="#1190" id="1190">1190</a>
 <a href="#1191" id="1191">1191</a>
 <a href="#1192" id="1192">1192</a>
+<a href="#1193" id="1193">1193</a>
+<a href="#1194" id="1194">1194</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -1307,10 +1309,6 @@
 
 	<span class="attr">#[pallet::hooks]
 	</span><span class="kw">impl</span>&lt;T: Config&gt; Hooks&lt;BlockNumberFor&lt;T&gt;&gt; <span class="kw">for </span>Pallet&lt;T&gt; {
-		<span class="kw">fn </span>on_runtime_upgrade() -&gt; Weight {
-			migration::migrate_to_latest::&lt;T&gt;()
-		}
-
 		<span class="kw">fn </span>on_idle(_now: T::BlockNumber, max_weight: Weight) -&gt; Weight {
 			<span class="comment">// on_idle processes additional messages with any remaining block weight.
 			</span><span class="self">Self</span>::service_xcmp_queue(max_weight)
@@ -1474,15 +1472,15 @@
 	#[pallet::generate_deposit(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>deposit_event)]
 	</span><span class="kw">pub enum </span>Event&lt;T: Config&gt; {
 		<span class="doccomment">/// Some XCM was executed ok.
-		</span>Success { message_hash: <span class="prelude-ty">Option</span>&lt;XcmHash&gt;, weight: Weight },
+		</span>Success { message_hash: XcmHash, message_id: XcmHash, weight: Weight },
 		<span class="doccomment">/// Some XCM failed.
-		</span>Fail { message_hash: <span class="prelude-ty">Option</span>&lt;XcmHash&gt;, error: XcmError, weight: Weight },
+		</span>Fail { message_hash: XcmHash, message_id: XcmHash, error: XcmError, weight: Weight },
 		<span class="doccomment">/// Bad XCM version used.
-		</span>BadVersion { message_hash: <span class="prelude-ty">Option</span>&lt;XcmHash&gt; },
+		</span>BadVersion { message_hash: XcmHash },
 		<span class="doccomment">/// Bad XCM format used.
-		</span>BadFormat { message_hash: <span class="prelude-ty">Option</span>&lt;XcmHash&gt; },
+		</span>BadFormat { message_hash: XcmHash },
 		<span class="doccomment">/// An HRMP message was sent to a sibling parachain.
-		</span>XcmpMessageSent { message_hash: <span class="prelude-ty">Option</span>&lt;XcmHash&gt; },
+		</span>XcmpMessageSent { message_hash: XcmHash },
 		<span class="doccomment">/// An XCM exceeded the individual message weight budget.
 		</span>OverweightEnqueued {
 			sender: ParaId,
@@ -1811,27 +1809,33 @@
 		xcm: VersionedXcm&lt;T::RuntimeCall&gt;,
 		max_weight: Weight,
 	) -&gt; <span class="prelude-ty">Result</span>&lt;Weight, XcmError&gt; {
-		<span class="kw">let </span>hash = xcm.using_encoded(sp_io::hashing::blake2_256);
-		<span class="macro">log::debug!</span>(<span class="string">&quot;Processing XCMP-XCM: {:?}&quot;</span>, <span class="kw-2">&amp;</span>hash);
+		<span class="kw">let </span>message_hash = xcm.using_encoded(sp_io::hashing::blake2_256);
+		<span class="macro">log::debug!</span>(<span class="string">&quot;Processing XCMP-XCM: {:?}&quot;</span>, <span class="kw-2">&amp;</span>message_hash);
 		<span class="kw">let </span>(result, event) = <span class="kw">match </span>Xcm::&lt;T::RuntimeCall&gt;::try_from(xcm) {
 			<span class="prelude-val">Ok</span>(xcm) =&gt; {
 				<span class="kw">let </span>location = (Parent, Parachain(sender.into()));
+				<span class="kw">let </span><span class="kw-2">mut </span>message_id = message_hash;
 
-				<span class="kw">match </span>T::XcmExecutor::execute_xcm(location, xcm, hash, max_weight) {
-					Outcome::Error(e) =&gt; (
-						<span class="prelude-val">Err</span>(e),
-						Event::Fail { message_hash: <span class="prelude-val">Some</span>(hash), error: e, weight: Weight::zero() },
+				<span class="kw">match </span>T::XcmExecutor::prepare_and_execute(
+					location,
+					xcm,
+					<span class="kw-2">&amp;mut </span>message_id,
+					max_weight,
+					Weight::zero(),
+				) {
+					Outcome::Error(error) =&gt; (
+						<span class="prelude-val">Err</span>(error),
+						Event::Fail { message_hash, message_id, error, weight: Weight::zero() },
 					),
-					Outcome::Complete(w) =&gt;
-						(<span class="prelude-val">Ok</span>(w), Event::Success { message_hash: <span class="prelude-val">Some</span>(hash), weight: w }),
+					Outcome::Complete(weight) =&gt;
+						(<span class="prelude-val">Ok</span>(weight), Event::Success { message_hash, message_id, weight }),
 					<span class="comment">// As far as the caller is concerned, this was dispatched without error, so
 					// we just report the weight used.
-					</span>Outcome::Incomplete(w, e) =&gt;
-						(<span class="prelude-val">Ok</span>(w), Event::Fail { message_hash: <span class="prelude-val">Some</span>(hash), error: e, weight: w }),
+					</span>Outcome::Incomplete(weight, error) =&gt;
+						(<span class="prelude-val">Ok</span>(weight), Event::Fail { message_hash, message_id, error, weight }),
 				}
 			},
-			<span class="prelude-val">Err</span>(()) =&gt;
-				(<span class="prelude-val">Err</span>(XcmError::UnhandledXcmVersion), Event::BadVersion { message_hash: <span class="prelude-val">Some</span>(hash) }),
+			<span class="prelude-val">Err</span>(()) =&gt; (<span class="prelude-val">Err</span>(XcmError::UnhandledXcmVersion), Event::BadVersion { message_hash }),
 		};
 		<span class="self">Self</span>::deposit_event(event);
 		result
@@ -2375,7 +2379,7 @@
 
 		<span class="kw">match </span><span class="self">Self</span>::send_fragment(id, XcmpMessageFormat::ConcatenatedVersionedXcm, xcm) {
 			<span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {
-				<span class="self">Self</span>::deposit_event(Event::XcmpMessageSent { message_hash: <span class="prelude-val">Some</span>(hash) });
+				<span class="self">Self</span>::deposit_event(Event::XcmpMessageSent { message_hash: hash });
 				<span class="prelude-val">Ok</span>(hash)
 			},
 			<span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>(SendError::Transport(&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt;::from(e))),

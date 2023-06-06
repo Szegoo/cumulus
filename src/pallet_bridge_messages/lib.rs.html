@@ -2102,16 +2102,6 @@
 <a href="#2102" id="2102">2102</a>
 <a href="#2103" id="2103">2103</a>
 <a href="#2104" id="2104">2104</a>
-<a href="#2105" id="2105">2105</a>
-<a href="#2106" id="2106">2106</a>
-<a href="#2107" id="2107">2107</a>
-<a href="#2108" id="2108">2108</a>
-<a href="#2109" id="2109">2109</a>
-<a href="#2110" id="2110">2110</a>
-<a href="#2111" id="2111">2111</a>
-<a href="#2112" id="2112">2112</a>
-<a href="#2113" id="2113">2113</a>
-<a href="#2114" id="2114">2114</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.
 // This file is part of Parity Bridges Common.
 
@@ -2179,7 +2169,7 @@
 };
 <span class="kw">use </span>bp_runtime::{BasicOperatingMode, ChainId, OwnedBridgeModule, PreComputedSize, Size};
 <span class="kw">use </span>codec::{Decode, Encode, MaxEncodedLen};
-<span class="kw">use </span>frame_support::{dispatch::PostDispatchInfo, ensure, fail, traits::Get};
+<span class="kw">use </span>frame_support::{dispatch::PostDispatchInfo, ensure, fail, traits::Get, DefaultNoBound};
 <span class="kw">use </span>sp_runtime::traits::UniqueSaturatedFrom;
 <span class="kw">use </span>sp_std::{marker::PhantomData, prelude::<span class="kw-2">*</span>};
 
@@ -2700,6 +2690,7 @@
 		StorageMap&lt;<span class="kw">_</span>, Blake2_128Concat, MessageKey, StoredMessagePayload&lt;T, I&gt;&gt;;
 
 	<span class="attr">#[pallet::genesis_config]
+	#[derive(DefaultNoBound)]
 	</span><span class="kw">pub struct </span>GenesisConfig&lt;T: Config&lt;I&gt;, I: <span class="lifetime">&#39;static </span>= ()&gt; {
 		<span class="doccomment">/// Initial pallet operating mode.
 		</span><span class="kw">pub </span>operating_mode: MessagesOperatingMode,
@@ -2707,17 +2698,6 @@
 		</span><span class="kw">pub </span>owner: <span class="prelude-ty">Option</span>&lt;T::AccountId&gt;,
 		<span class="doccomment">/// Dummy marker.
 		</span><span class="kw">pub </span>phantom: sp_std::marker::PhantomData&lt;I&gt;,
-	}
-
-	<span class="attr">#[cfg(feature = <span class="string">&quot;std&quot;</span>)]
-	</span><span class="kw">impl</span>&lt;T: Config&lt;I&gt;, I: <span class="lifetime">&#39;static</span>&gt; Default <span class="kw">for </span>GenesisConfig&lt;T, I&gt; {
-		<span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-			<span class="self">Self </span>{
-				operating_mode: Default::default(),
-				owner: Default::default(),
-				phantom: Default::default(),
-			}
-		}
 	}
 
 	<span class="attr">#[pallet::genesis_build]

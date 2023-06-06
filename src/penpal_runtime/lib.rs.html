@@ -850,7 +850,8 @@
 <a href="#850" id="850">850</a>
 <a href="#851" id="851">851</a>
 <a href="#852" id="852">852</a>
-</pre><pre class="rust"><code><span class="comment">// Copyright 2019-2022 Parity Technologies (UK) Ltd.
+<a href="#853" id="853">853</a>
+</pre><pre class="rust"><code><span class="comment">// Copyright 2019-2023 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
 // Cumulus is free software: you can redistribute it and/or modify
@@ -866,11 +867,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Cumulus.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 
-</span><span class="doccomment">//! The Penpal runtime is designed as a test runtime that can be created using an arbitrary parachain id.
-//! (and as such multiple parachains can be on the same relay node - though make sure you have enough relay
-//! nodes running to support this or you will get the not scheduled on a core error message.)
+</span><span class="doccomment">//! The PenPal runtime is designed as a test runtime that can be created with an arbitrary `ParaId`,
+//! such that multiple instances of the parachain can be on the same parent relay. Ensure that you
+//! have enough nodes running to support this or you will get scheduling errors.
 //!
-//! The penpal runtime&#39;s primary use is as a partner when testing statemine/t with reserve asset transfers.
+//! The PenPal runtime&#39;s primary use is for testing interactions between System parachains and
+//! other chains that are not trusted teleporters.
+
 </span><span class="attr">#![cfg_attr(not(feature = <span class="string">&quot;std&quot;</span>), no_std)]
 </span><span class="comment">// `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 </span><span class="attr">#![recursion_limit = <span class="string">&quot;256&quot;</span>]
@@ -975,11 +978,10 @@
 </span><span class="kw">pub type </span>UncheckedExtrinsic =
 	generic::UncheckedExtrinsic&lt;Address, RuntimeCall, Signature, SignedExtra&gt;;
 
-<span class="doccomment">/// Extrinsic type that has already been checked.
-</span><span class="kw">pub type </span>CheckedExtrinsic = generic::CheckedExtrinsic&lt;AccountId, RuntimeCall, SignedExtra&gt;;
-
-<span class="kw">pub type </span>Migrations =
-	(pallet_balances::migration::MigrateToTrackInactive&lt;Runtime, xcm_config::CheckingAccount&gt;,);
+<span class="kw">pub type </span>Migrations = (
+	pallet_balances::migration::MigrateToTrackInactive&lt;Runtime, xcm_config::CheckingAccount&gt;,
+	pallet_collator_selection::migration::v1::MigrateToV1&lt;Runtime&gt;,
+);
 
 <span class="doccomment">/// Executive: handles dispatch to the various modules.
 </span><span class="kw">pub type </span>Executive = frame_executive::Executive&lt;
@@ -1239,7 +1241,7 @@
 	<span class="kw">type </span>WeightInfo = pallet_balances::weights::SubstrateWeight&lt;Runtime&gt;;
 	<span class="kw">type </span>MaxReserves = ConstU32&lt;<span class="number">50</span>&gt;;
 	<span class="kw">type </span>ReserveIdentifier = [u8; <span class="number">8</span>];
-	<span class="kw">type </span>HoldIdentifier = ();
+	<span class="kw">type </span>RuntimeHoldReason = RuntimeHoldReason;
 	<span class="kw">type </span>FreezeIdentifier = ();
 	<span class="kw">type </span>MaxHolds = ConstU32&lt;<span class="number">0</span>&gt;;
 	<span class="kw">type </span>MaxFreezes = ConstU32&lt;<span class="number">0</span>&gt;;

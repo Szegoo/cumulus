@@ -573,6 +573,8 @@
 <a href="#573" id="573">573</a>
 <a href="#574" id="574">574</a>
 <a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2022 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -736,7 +738,9 @@
 	}
 }
 
-<span class="doccomment">/// Worker that should be used in combination with [`RelayChainRpcClient`]. Must be polled to distribute header notifications to listeners.
+<span class="doccomment">/// Worker that should be used in combination with [`crate::RelayChainRpcClient`].
+///
+/// Must be polled to distribute header notifications to listeners.
 </span><span class="kw">struct </span>ReconnectingWebsocketWorker {
 	ws_urls: Vec&lt;String&gt;,
 	<span class="doccomment">/// Communication channel with the RPC client

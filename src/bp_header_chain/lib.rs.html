@@ -250,8 +250,7 @@
 <span class="kw">use </span>core::{clone::Clone, cmp::Eq, default::Default, fmt::Debug};
 <span class="kw">use </span>frame_support::PalletError;
 <span class="kw">use </span>scale_info::TypeInfo;
-<span class="attr">#[cfg(feature = <span class="string">&quot;std&quot;</span>)]
-</span><span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>sp_consensus_grandpa::{AuthorityList, ConsensusLog, SetId, GRANDPA_ENGINE_ID};
 <span class="kw">use </span>sp_runtime::{traits::Header <span class="kw">as </span>HeaderT, Digest, RuntimeDebug};
 <span class="kw">use </span>sp_std::boxed::Box;
@@ -333,8 +332,9 @@
 <span class="doccomment">/// Data required for initializing the GRANDPA bridge pallet.
 ///
 /// The bridge needs to know where to start its sync from, and this provides that initial context.
-</span><span class="attr">#[derive(Default, Encode, Decode, RuntimeDebug, PartialEq, Eq, Clone, TypeInfo)]
-#[cfg_attr(feature = <span class="string">&quot;std&quot;</span>, derive(Serialize, Deserialize))]
+</span><span class="attr">#[derive(
+	Default, Encode, Decode, RuntimeDebug, PartialEq, Eq, Clone, TypeInfo, Serialize, Deserialize,
+)]
 </span><span class="kw">pub struct </span>InitializationData&lt;H: HeaderT&gt; {
 	<span class="doccomment">/// The header from which we should start syncing.
 	</span><span class="kw">pub </span>header: Box&lt;H&gt;,

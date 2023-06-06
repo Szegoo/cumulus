@@ -88,6 +88,15 @@
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
 <a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -104,9 +113,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Cumulus.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 
-</span><span class="kw">use </span><span class="kw">crate</span>::chain_spec::Extensions;
+</span><span class="kw">use </span><span class="kw">crate</span>::chain_spec::{get_account_id_from_seed, Extensions};
 <span class="kw">use </span>cumulus_primitives_core::ParaId;
 <span class="kw">use </span>sc_service::ChainType;
+<span class="kw">use </span>sp_core::sr25519;
 
 <span class="doccomment">/// Specialized `ChainSpec` for the Glutton parachain runtime.
 </span><span class="kw">pub type </span>GluttonChainSpec =
@@ -154,13 +164,13 @@
 		<span class="comment">// Name
 		</span><span class="macro">format!</span>(<span class="string">&quot;Glutton {}&quot;</span>, para_id).as_str(),
 		<span class="comment">// ID
-		</span><span class="macro">format!</span>(<span class="string">&quot;glutton_kusama_{}&quot;</span>, para_id).as_str(),
+		</span><span class="macro">format!</span>(<span class="string">&quot;glutton-kusama-{}&quot;</span>, para_id).as_str(),
 		ChainType::Live,
 		<span class="kw">move </span>|| glutton_genesis(para_id),
 		Vec::new(),
 		<span class="prelude-val">None</span>,
 		<span class="comment">// Protocol ID
-		</span><span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;glutton_kusama_{}&quot;</span>, para_id).as_str()),
+		</span><span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;glutton-kusama-{}&quot;</span>, para_id).as_str()),
 		<span class="prelude-val">None</span>,
 		<span class="prelude-val">Some</span>(properties),
 		Extensions { relay_chain: <span class="string">&quot;kusama&quot;</span>.into(), para_id: para_id.into() },
@@ -176,6 +186,14 @@
 		},
 		parachain_info: glutton_runtime::ParachainInfoConfig { parachain_id },
 		parachain_system: Default::default(),
+		glutton: glutton_runtime::GluttonConfig {
+			compute: Default::default(),
+			storage: Default::default(),
+			trash_data_count: Default::default(),
+		},
+		sudo: glutton_runtime::SudoConfig {
+			key: <span class="prelude-val">Some</span>(get_account_id_from_seed::&lt;sr25519::Public&gt;(<span class="string">&quot;Alice&quot;</span>)),
+		},
 	}
 }
 </code></pre></div>

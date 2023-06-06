@@ -72,7 +72,6 @@
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 
@@ -118,8 +117,7 @@
 		<span class="kw">pub </span>parachain_id: ParaId,
 	}
 
-	<span class="attr">#[cfg(feature = <span class="string">&quot;std&quot;</span>)]
-	</span><span class="kw">impl </span>Default <span class="kw">for </span>GenesisConfig {
+	<span class="kw">impl </span>Default <span class="kw">for </span>GenesisConfig {
 		<span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
 			<span class="self">Self </span>{ parachain_id: <span class="number">100</span>.into() }
 		}

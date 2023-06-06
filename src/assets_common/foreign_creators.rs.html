@@ -74,16 +74,16 @@
 };
 <span class="kw">use </span>pallet_xcm::{EnsureXcm, Origin <span class="kw">as </span>XcmOrigin};
 <span class="kw">use </span>xcm::latest::MultiLocation;
-<span class="kw">use </span>xcm_executor::traits::Convert;
+<span class="kw">use </span>xcm_executor::traits::ConvertLocation;
 
-<span class="comment">// `EnsureOriginWithArg` impl for `CreateOrigin` that allows only XCM origins that are locations
-// containing the class location.
+<span class="doccomment">/// `EnsureOriginWithArg` impl for `CreateOrigin` that allows only XCM origins that are locations
+/// containing the class location.
 </span><span class="kw">pub struct </span>ForeignCreators&lt;IsForeign, AccountOf, AccountId&gt;(
 	sp_std::marker::PhantomData&lt;(IsForeign, AccountOf, AccountId)&gt;,
 );
 <span class="kw">impl</span>&lt;
 		IsForeign: ContainsPair&lt;MultiLocation, MultiLocation&gt;,
-		AccountOf: Convert&lt;MultiLocation, AccountId&gt;,
+		AccountOf: ConvertLocation&lt;AccountId&gt;,
 		AccountId: Clone,
 		RuntimeOrigin: From&lt;XcmOrigin&gt; + OriginTrait + Clone,
 	&gt; EnsureOriginWithArg&lt;RuntimeOrigin, MultiLocation&gt;
@@ -102,7 +102,7 @@
 		<span class="kw">if </span>!IsForeign::contains(asset_location, <span class="kw-2">&amp;</span>origin_location) {
 			<span class="kw">return </span><span class="prelude-val">Err</span>(origin)
 		}
-		AccountOf::convert(origin_location).map_err(|<span class="kw">_</span>| origin)
+		AccountOf::convert_location(<span class="kw-2">&amp;</span>origin_location).ok_or(origin)
 	}
 
 	<span class="attr">#[cfg(feature = <span class="string">&quot;runtime-benchmarks&quot;</span>)]

@@ -452,7 +452,6 @@
 <a href="#452" id="452">452</a>
 <a href="#453" id="453">453</a>
 <a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.
 // This file is part of Polkadot.
 
@@ -544,14 +543,13 @@
 	///
 	/// This will not check the signature, for this you should use [`BlockAnnounceData::check_signature`].
 	</span><span class="kw">fn </span>validate(<span class="kw-2">&amp;</span><span class="self">self</span>, encoded_header: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Validation&gt; {
-		<span class="kw">let </span>candidate_hash = <span class="kw">if let </span>CompactStatement::Seconded(h) =
-			<span class="self">self</span>.statement.unchecked_payload()
-		{
-			h
-		} <span class="kw">else </span>{
-			<span class="macro">tracing::debug!</span>(target: LOG_TARGET, <span class="string">&quot;`CompactStatement` isn&#39;t the candidate variant!&quot;</span>,);
-			<span class="kw">return </span><span class="prelude-val">Err</span>(Validation::Failure { disconnect: <span class="bool-val">true </span>})
-		};
+		<span class="kw">let </span>candidate_hash =
+			<span class="kw">if let </span>CompactStatement::Seconded(h) = <span class="self">self</span>.statement.unchecked_payload() {
+				h
+			} <span class="kw">else </span>{
+				<span class="macro">tracing::debug!</span>(target: LOG_TARGET, <span class="string">&quot;`CompactStatement` isn&#39;t the candidate variant!&quot;</span>,);
+				<span class="kw">return </span><span class="prelude-val">Err</span>(Validation::Failure { disconnect: <span class="bool-val">true </span>})
+			};
 
 		<span class="kw">if </span><span class="kw-2">*</span>candidate_hash != <span class="self">self</span>.receipt.hash() {
 			<span class="macro">tracing::debug!</span>(
@@ -789,9 +787,9 @@
 			<span class="kw">let </span>relay_chain_is_syncing = relay_chain_interface
 				.is_major_syncing()
 				.<span class="kw">await
-				</span>.map_err(|e| {
-					<span class="macro">tracing::error!</span>(target: LOG_TARGET, <span class="string">&quot;Unable to determine sync status. {}&quot;</span>, e)
-				})
+				</span>.map_err(
+					|e| <span class="macro">tracing::error!</span>(target: LOG_TARGET, <span class="string">&quot;Unable to determine sync status. {}&quot;</span>, e),
+				)
 				.unwrap_or(<span class="bool-val">false</span>);
 
 			<span class="kw">if </span>relay_chain_is_syncing {
